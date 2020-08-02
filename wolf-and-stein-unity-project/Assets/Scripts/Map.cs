@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class Map : MonoBehaviourSingleton<Map>
+public class Map:MonoBehaviourSingleton<Map>
 {
     public Color floorColor;
     public Color ceilingColor;
@@ -17,7 +17,10 @@ public class Map : MonoBehaviourSingleton<Map>
 
     readonly Color Wall1Color = Color.black;
     readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
+    readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
     readonly Color TunnelColor = Color.white;
+
+    static readonly List<TileType> NoPrefabTileTypes = new List<TileType>() { TileType.TUNNEL };
 
     void Start()
     {
@@ -66,36 +69,57 @@ public class Map : MonoBehaviourSingleton<Map>
                 s += (int)mapData[row, col];
                 Vector3 spawnPos = new Vector3(col, 0.5f, -row);
 
-                if (false == IsWallOnCoord(row, col))
-                    continue;
-
-                GameObject prefab = GetPrefabByTileType(mapData[row, col]);
-
-                if (IsValidCoord(row - 1, col) && IsTunnelOnCoord(row - 1, col))
-                    Instantiate(prefab, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
-                if (IsValidCoord(row + 1, col) && IsTunnelOnCoord(row + 1, col))
-                    Instantiate(prefab, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
-                if (IsValidCoord(row, col - 1) && IsTunnelOnCoord(row, col - 1))
-                    Instantiate(prefab, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
-                if (IsValidCoord(row, col + 1) && IsTunnelOnCoord(row, col + 1))
-                    Instantiate(prefab, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+                switch (mapData[row, col])
+                {
+                    case TileType.WALL1:
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1);
+                        break;
+                    case TileType.WALL2:
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2);
+                        break;
+                    case TileType.DOOR:
+                        PlaceDoor(spawnPos, row, col);
+                        break;
+                    case TileType.TUNNEL:
+                        break;
+                    default:
+                        break;
+                }
             }
             s += "\n";
         }
         //Debug.Log(s);
     }
 
-    private GameObject GetPrefabByTileType(TileType type)
+    private void PlaceDoor(Vector3 spawnPos, int row, int col)
     {
-        switch (type)
-        {
-            case TileType.WALL1:
-                return GamePreferences.Instance.Wall1;
-            case TileType.WALL2:
-                return GamePreferences.Instance.Wall2;
-            default:
-                throw new Exception("No such prefab exsist for this tiletype");
-        }
+        //place door object
+        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col) || IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col))
+            Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.identity, dynamic);
+        else if(IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1) || IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
+            Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
+
+        //place frame of door
+        if (IsValidCoord(row - 1, col) && IsUnpassableOnCoord(row - 1, col))
+            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
+        if (IsValidCoord(row + 1, col) && IsUnpassableOnCoord(row + 1, col))
+            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
+        if (IsValidCoord(row, col - 1) && IsUnpassableOnCoord(row, col - 1))
+            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+        if (IsValidCoord(row, col + 1) && IsUnpassableOnCoord(row, col + 1))
+            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+    }
+
+    private void PlaceWall(Vector3 spawnPos, int row, int col, GameObject prefab)
+    {
+        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col))
+            Instantiate(prefab, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
+        if (IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col))
+            Instantiate(prefab, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
+        if (IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1))
+            Instantiate(prefab, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+        if (IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
+            Instantiate(prefab, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
     }
 
     private bool IsValidCoord(int row, int col)
@@ -111,17 +135,20 @@ public class Map : MonoBehaviourSingleton<Map>
         }
     }
 
-    private bool IsWallOnCoord(int row, int col)
+    private bool IsUnpassableOnCoord(int row, int col)
     {
-        return mapData[row, col] <= TileType.WALL_MAX;
+        return mapData[row, col] <= TileType.UNPASSABLE;
     }
 
-    private bool IsTunnelOnCoord(int row, int col)
+    private bool IsSemiPassableOnCoord(int row, int col)
     {
-         return mapData[row, col] == TileType.TUNNEL;
+        return TileType.UNPASSABLE < mapData[row, col] && mapData[row, col] <= TileType.SEMIPASSABLE;
     }
 
-
+    private bool IsPassableOnCoord(int row, int col)
+    {
+         return TileType.UNPASSABLE < mapData[row, col] && mapData[row, col] <= TileType.PASSABLE;
+    }
 
     private void DeleteCurrentLevel()
     {
@@ -145,6 +172,8 @@ public class Map : MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.WALL1;
                 else if (c == Wall2Color)
                     mapData[i, j] = TileType.WALL2;
+                else if (c == DoorColor)
+                    mapData[i, j] = TileType.DOOR;
                 else if (c == TunnelColor)
                     mapData[i, j] = TileType.TUNNEL;
                 else
@@ -159,9 +188,16 @@ public class Map : MonoBehaviourSingleton<Map>
     {
         WALL1,
         WALL2,
+        
+        UNPASSABLE = WALL2,
+        
+        DOOR,
 
-        WALL_MAX = WALL2,
+        SEMIPASSABLE = DOOR,
+
+
         TUNNEL,
-        DOOR
+
+        PASSABLE = TUNNEL
     }
 }
