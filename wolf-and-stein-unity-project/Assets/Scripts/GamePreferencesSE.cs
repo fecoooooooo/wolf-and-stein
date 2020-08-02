@@ -10,4 +10,5 @@ public class GamePreferencesSE : ScriptableObject
 	public GameObject Wall2;
 	public GameObject Door;
 	public GameObject DoorFrame;
+	public GameObject Lamp;
 }

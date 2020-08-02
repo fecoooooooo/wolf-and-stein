@@ -53,7 +53,7 @@ public class Door : MonoBehaviour
     public void OnCloseAnimStarted()
     {
         //why is this called at the end of the animation instead of start as it is set in the animation
-        //pathBlockCollider.enabled = true;
+        pathBlockCollider.enabled = true;
         Debug.Log("close started");
     }
 }

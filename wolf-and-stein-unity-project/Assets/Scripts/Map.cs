@@ -18,6 +18,7 @@ public class Map:MonoBehaviourSingleton<Map>
     readonly Color Wall1Color = Color.black;
     readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
     readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
+    readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
     readonly Color TunnelColor = Color.white;
 
     static readonly List<TileType> NoPrefabTileTypes = new List<TileType>() { TileType.TUNNEL };
@@ -81,6 +82,9 @@ public class Map:MonoBehaviourSingleton<Map>
                         PlaceDoor(spawnPos, row, col);
                         break;
                     case TileType.TUNNEL:
+                        break;           
+                    case TileType.LAMP:
+                        PlaceDecoration(spawnPos);
                         break;
                     default:
                         break;
@@ -89,6 +93,11 @@ public class Map:MonoBehaviourSingleton<Map>
             s += "\n";
         }
         //Debug.Log(s);
+    }
+
+    private void PlaceDecoration(Vector3 spawnPos)
+    {
+        Instantiate(GamePreferences.Instance.Lamp, spawnPos, Quaternion.identity, dynamic);
     }
 
     private void PlaceDoor(Vector3 spawnPos, int row, int col)
@@ -176,6 +185,8 @@ public class Map:MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.DOOR;
                 else if (c == TunnelColor)
                     mapData[i, j] = TileType.TUNNEL;
+                else if (c == LampColor)
+                    mapData[i, j] = TileType.LAMP;
                 else
                     throw new Exception("This color is not specified yet: " + c);
             }
@@ -197,7 +208,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
 
         TUNNEL,
+        LAMP,
 
-        PASSABLE = TUNNEL
+        PASSABLE = LAMP
     }
 }

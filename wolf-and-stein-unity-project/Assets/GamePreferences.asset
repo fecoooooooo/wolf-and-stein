@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648f68d2f0a6869479b8ff4ec2789f62, type: 3}
   m_Name: GamePreferences
   m_EditorClassIdentifier: 
+  DoorAutoCloseTime: 0
   Wall1: {fileID: 7790637854563171827, guid: 08d756e6b138aae4b89103be25bb933e, type: 3}
   Wall2: {fileID: 7790637854563171827, guid: be08e3ea320d2af40944c1c097c644db, type: 3}
   Door: {fileID: 7790637854563171827, guid: 568d4190bdbba8e49a304594b61e4cc2, type: 3}
   DoorFrame: {fileID: 7790637854563171827, guid: 36d5ee987ef876b4f804dcef5139010b,
     type: 3}
+  Lamp: {fileID: 7790637854563171827, guid: 2099b93fa8cc69f4ca993f167d160873, type: 3}
