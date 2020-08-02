@@ -5,27 +5,34 @@ using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class Map : MonoBehaviour
+public class Map : MonoBehaviourSingleton<Map>
 {
-    //TODO: move this to GameHandler class
-    public GameObject wall1;
+    public Color floorColor;
+    public Color ceilingColor;
 
+    Transform floor;
     Transform ceiling;
     Transform dynamic;
     TileTypes[,] mapData;
-    
+
+
     void Start()
     {
-        ceiling = transform.Find("Static/Ceiling");
+        dynamic = transform.Find("Dynamic");
         dynamic = transform.Find("Dynamic");
 
-        if(Application.isPlaying)
-            ceiling.GetComponent<MeshRenderer>().enabled = true;
+        SetFloorAndCeiling();
     }
 
-    void Update()
+    public void SetFloorAndCeiling()
     {
-        
+        floor = transform.Find("Static/Floor");
+        ceiling = transform.Find("Static/Ceiling");
+    }
+
+    public void SetFloorAndCeilingColors()
+    {
+        floor.GetComponent<MeshRenderer>().sharedMaterial.color = floorColor;
     }
 
     public void Generate(int level)
@@ -35,6 +42,11 @@ public class Map : MonoBehaviour
         ReadMapData(level);
         DeleteCurrentLevel();
         PlaceLevelPrefabs();
+    }
+
+    private void OnValidate()
+    {
+        SetFloorAndCeilingColors();
     }
 
     private void PlaceLevelPrefabs()
@@ -51,17 +63,17 @@ public class Map : MonoBehaviour
                     continue;
 
                 if (IsValidCoord(row - 1, col) && IsTunnelOnCoord(row - 1, col))
-                    Instantiate(wall1, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
+                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
                 if (IsValidCoord(row + 1, col) && IsTunnelOnCoord(row + 1, col))
-                    Instantiate(wall1, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
+                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
                 if (IsValidCoord(row, col - 1) && IsTunnelOnCoord(row, col - 1))
-                    Instantiate(wall1, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
                 if (IsValidCoord(row, col + 1) && IsTunnelOnCoord(row, col + 1))
-                    Instantiate(wall1, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
             }
             s += "\n";
         }
-        Debug.Log(s);
+        //Debug.Log(s);
     }
 
     private bool IsValidCoord(int row, int col)
