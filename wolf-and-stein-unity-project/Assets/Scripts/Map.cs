@@ -13,8 +13,11 @@ public class Map : MonoBehaviourSingleton<Map>
     Transform floor;
     Transform ceiling;
     Transform dynamic;
-    TileTypes[,] mapData;
+    TileType[,] mapData;
 
+    readonly Color Wall1Color = Color.black;
+    readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
+    readonly Color TunnelColor = Color.white;
 
     void Start()
     {
@@ -32,7 +35,11 @@ public class Map : MonoBehaviourSingleton<Map>
 
     public void SetFloorAndCeilingColors()
     {
-        floor.GetComponent<MeshRenderer>().sharedMaterial.color = floorColor;
+        if (null != floor && null != ceiling)
+        {
+            floor.GetComponent<MeshRenderer>().sharedMaterial.color = floorColor;
+            ceiling.GetComponent<MeshRenderer>().sharedMaterial.color = ceilingColor;
+        }
     }
 
     public void Generate(int level)
@@ -62,18 +69,33 @@ public class Map : MonoBehaviourSingleton<Map>
                 if (false == IsWallOnCoord(row, col))
                     continue;
 
+                GameObject prefab = GetPrefabByTileType(mapData[row, col]);
+
                 if (IsValidCoord(row - 1, col) && IsTunnelOnCoord(row - 1, col))
-                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
+                    Instantiate(prefab, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
                 if (IsValidCoord(row + 1, col) && IsTunnelOnCoord(row + 1, col))
-                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
+                    Instantiate(prefab, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
                 if (IsValidCoord(row, col - 1) && IsTunnelOnCoord(row, col - 1))
-                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+                    Instantiate(prefab, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
                 if (IsValidCoord(row, col + 1) && IsTunnelOnCoord(row, col + 1))
-                    Instantiate(GamePreferences.Instance.Wall1, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+                    Instantiate(prefab, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
             }
             s += "\n";
         }
         //Debug.Log(s);
+    }
+
+    private GameObject GetPrefabByTileType(TileType type)
+    {
+        switch (type)
+        {
+            case TileType.WALL1:
+                return GamePreferences.Instance.Wall1;
+            case TileType.WALL2:
+                return GamePreferences.Instance.Wall2;
+            default:
+                throw new Exception("No such prefab exsist for this tiletype");
+        }
     }
 
     private bool IsValidCoord(int row, int col)
@@ -91,12 +113,12 @@ public class Map : MonoBehaviourSingleton<Map>
 
     private bool IsWallOnCoord(int row, int col)
     {
-        return mapData[row, col] <= TileTypes.WALL_MAX;
+        return mapData[row, col] <= TileType.WALL_MAX;
     }
 
     private bool IsTunnelOnCoord(int row, int col)
     {
-         return mapData[row, col] == TileTypes.TUNNEL;
+         return mapData[row, col] == TileType.TUNNEL;
     }
 
 
@@ -110,7 +132,7 @@ public class Map : MonoBehaviourSingleton<Map>
     private void ReadMapData(int level)
     {
         Texture2D image = (Texture2D)Resources.Load(level.ToString());
-        mapData = new TileTypes[image.width, image.height];
+        mapData = new TileType[image.width, image.height];
 
         for (int x = 0; x < image.width; ++x)
         {
@@ -119,21 +141,26 @@ public class Map : MonoBehaviourSingleton<Map>
                 int i = image.height - 1 - y;
                 int j = x;
                 Color c = image.GetPixel(x, y);
-                if (c == Color.black)
-                    mapData[i, j] = TileTypes.WALL1;
-                else if (c == Color.white)
-                    mapData[i, j] = TileTypes.TUNNEL;
+                if (c == Wall1Color)
+                    mapData[i, j] = TileType.WALL1;
+                else if (c == Wall2Color)
+                    mapData[i, j] = TileType.WALL2;
+                else if (c == TunnelColor)
+                    mapData[i, j] = TileType.TUNNEL;
+                else
+                    throw new Exception("This color is not specified yet: " + c);
             }
         }
 
 
     }
 
-    public enum TileTypes : int
+    public enum TileType : int
     {
         WALL1,
+        WALL2,
 
-        WALL_MAX = WALL1,
+        WALL_MAX = WALL2,
         TUNNEL,
         DOOR
     }

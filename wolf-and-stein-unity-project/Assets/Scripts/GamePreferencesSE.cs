@@ -6,4 +6,5 @@ using UnityEngine;
 public class GamePreferencesSE : ScriptableObject
 {
 	public GameObject Wall1;
+	public GameObject Wall2;
 }

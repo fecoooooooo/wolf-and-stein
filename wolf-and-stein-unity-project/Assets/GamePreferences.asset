@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648f68d2f0a6869479b8ff4ec2789f62, type: 3}
   m_Name: GamePreferences
   m_EditorClassIdentifier: 
-  floorColor: {r: 0.8867924, g: 0, b: 0, a: 0}
-  ceilingColor: {r: 0, g: 0, b: 0, a: 0}
+  Wall1: {fileID: 7790637854563171827, guid: 08d756e6b138aae4b89103be25bb933e, type: 3}
+  Wall2: {fileID: 7790637854563171827, guid: be08e3ea320d2af40944c1c097c644db, type: 3}
