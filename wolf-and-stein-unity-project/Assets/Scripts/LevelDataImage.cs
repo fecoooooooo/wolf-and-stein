@@ -1,17 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class LevelEditor : MonoBehaviour
+public class LevelDataImage : MonoBehaviour
 {
-    void Start()
+    void Update()
     {
         
     }
 
-    void Update()
-    {
-        Debug.Log(Input.mousePosition);
-    }
 }
