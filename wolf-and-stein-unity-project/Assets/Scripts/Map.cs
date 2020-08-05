@@ -103,10 +103,19 @@ public class Map:MonoBehaviourSingleton<Map>
     private void PlaceDoor(Vector3 spawnPos, int row, int col)
     {
         //place door object
-        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col) || IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col))
+        bool isTunnelOverAndUnderDoor = IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col) || IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col);
+        if (isTunnelOverAndUnderDoor)
             Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.identity, dynamic);
-        else if(IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1) || IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
-            Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
+		else
+		{
+            bool doorToLeft = IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1);
+            bool doorToRight = IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1);
+            if (doorToLeft)
+                Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, -90, 0), dynamic);
+            else if (doorToRight)
+                Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
+        }
+        
 
         //place frame of door
         if (IsValidCoord(row - 1, col) && IsUnpassableOnCoord(row - 1, col))

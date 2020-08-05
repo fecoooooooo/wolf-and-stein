@@ -8,6 +8,7 @@ public class Door : MonoBehaviour
     bool canInteract;
     Animator animator;
     Collider pathBlockCollider;
+    float direction = 0.0f;
 
     void Start()
     {
@@ -25,7 +26,14 @@ public class Door : MonoBehaviour
             if(currentAnimations.Length > 0 && currentAnimations[0].clip.name == "DoorOpen")
                 pathBlockCollider.enabled = true;
 
-            animator.SetTrigger("Interact");
+            bool firstRun = direction == 0.0f;
+            if (firstRun)
+                direction = 1.0f;
+            else
+                direction *= -1;
+
+            animator.SetFloat("Direction", direction);
+            
         }
     }
 
@@ -45,15 +53,21 @@ public class Door : MonoBehaviour
         canInteract = false;
     }
 
-    public void OnOpenAnimEnded()
+    public void AnimationReachedFirstFrame()
     {
-        pathBlockCollider.enabled = false;
+        bool playingCloseAnim = direction == -1.0f;
+        if (playingCloseAnim)
+            animator.SetFloat("Direction", 0);
     }
 
-    public void OnCloseAnimStarted()
+    public void AnimationReachedLastFrame()
     {
-        //why is this called at the end of the animation instead of start as it is set in the animation
-        pathBlockCollider.enabled = true;
-        Debug.Log("close started");
+        bool playingOpenAnim = direction == 1.0f;
+        if (playingOpenAnim)
+        {
+            animator.SetFloat("Direction", 0);
+        }
+
+        pathBlockCollider.enabled = playingOpenAnim ? false : true;
     }
 }
