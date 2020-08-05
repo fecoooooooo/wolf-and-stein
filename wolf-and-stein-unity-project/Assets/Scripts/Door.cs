@@ -1,73 +1,97 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    bool canInteract;
-    Animator animator;
-    Collider pathBlockCollider;
-    float direction = 0.0f;
+	Animator animator;
+	Collider pathBlockCollider;
+	Bounds canInteractBounds;
+	float animDirection = -1.0f;
+	List<Collider> currentlyCollidingWithPathBlocker = new List<Collider>();
 
-    void Start()
-    {
-        animator = GetComponent<Animator>();
-        pathBlockCollider = GetComponents<Collider>().FirstOrDefault(t => !t.isTrigger);
-    }
+	bool shouldAutoCloseDoor = false;
+	float timeTillDoorClose = 0;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (canInteract && Input.GetKeyDown(KeyCode.E))
-        {
-            var currentAnimations = animator.GetCurrentAnimatorClipInfo(0);
+	void Start()
+	{
+		animator = GetComponent<Animator>();
+		
+		pathBlockCollider = GetComponents<Collider>().FirstOrDefault(t => !t.isTrigger);
+		
+		Collider canInteractCollider = GetComponents<Collider>().FirstOrDefault(t => t.isTrigger);
+		canInteractBounds = canInteractCollider.bounds;
+		canInteractCollider.enabled = false;
+	}
 
-            if(currentAnimations.Length > 0 && currentAnimations[0].clip.name == "DoorOpen")
-                pathBlockCollider.enabled = true;
+	void Update()
+	{
+		HandleInteraction();
+		HandleAutoClose();
+	}
 
-            bool firstRun = direction == 0.0f;
-            if (firstRun)
-                direction = 1.0f;
-            else
-                direction *= -1;
+	private void HandleInteraction()
+	{
+		if (Input.GetKeyDown(KeyCode.E) && CanInteract())
+		{
+			animDirection *= -1;
+			animator.SetFloat("Direction", animDirection);
+		}
+	}
 
-            animator.SetFloat("Direction", direction);
-            
-        }
-    }
+	private void HandleAutoClose()
+	{
+		if (shouldAutoCloseDoor)
+		{
+			timeTillDoorClose -= Time.deltaTime;
+		
+			if (0 >= timeTillDoorClose && currentlyCollidingWithPathBlocker.Count == 0)
+			{
+				animDirection *= -1;
+				animator.SetFloat("Direction", animDirection);
+				shouldAutoCloseDoor = false;
+			}
+		}
+	}
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (null == other.GetComponent<CharController>())
-            return;
+	private void OnTriggerEnter(Collider other)
+	{
+		currentlyCollidingWithPathBlocker.Add(other);
+	}
 
-        canInteract = true;
-    }
+	private void OnTriggerExit(Collider other)
+	{
+		currentlyCollidingWithPathBlocker.Remove(other);
+	}
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (null == other.GetComponent<CharController>())
-            return;
+	private bool CanInteract()
+	{
+		return canInteractBounds.Intersects(Character.instance.GetComponent<CapsuleCollider>().bounds);
+	}
 
-        canInteract = false;
-    }
+	public void AnimationReachedFirstFrame()
+	{
+		bool closingDoor = animDirection == -1.0f;
+		if (closingDoor)
+		{
+			animator.SetFloat("Direction", 0);
+			shouldAutoCloseDoor = false;
+			timeTillDoorClose = -1f;
+		}
+	}
 
-    public void AnimationReachedFirstFrame()
-    {
-        bool playingCloseAnim = direction == -1.0f;
-        if (playingCloseAnim)
-            animator.SetFloat("Direction", 0);
-    }
+	public void AnimationReachedLastFrame()
+	{
+		bool openingDoor = animDirection == 1.0f;
+		if (openingDoor)
+		{
+			animator.SetFloat("Direction", 0);
+			timeTillDoorClose = GamePreferences.Instance.DoorAutoCloseTime;
+			shouldAutoCloseDoor = true;
+		}
 
-    public void AnimationReachedLastFrame()
-    {
-        bool playingOpenAnim = direction == 1.0f;
-        if (playingOpenAnim)
-        {
-            animator.SetFloat("Direction", 0);
-        }
-
-        pathBlockCollider.enabled = playingOpenAnim ? false : true;
-    }
+		pathBlockCollider.isTrigger = openingDoor ? true : false;
+	}
 }

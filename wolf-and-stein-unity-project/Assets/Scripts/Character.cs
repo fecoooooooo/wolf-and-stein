@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharController : MonoBehaviour
+public class Character : MonoBehaviourSingleton<Character>
 {
     new Rigidbody rigidbody;
     float TurnSpeed = 3f;
