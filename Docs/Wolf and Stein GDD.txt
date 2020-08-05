@@ -1,0 +1,127 @@
+Koncepcio:
+	Wolfenstein 3D remake, a farkasok mint Üldözött, zsidó nép, a náci, árja Kövek ellen.
+
+Kedvcsinalok:
+	korabeli plakatpok:
+		"Nicht Vershlag!" zsidoellens plakat
+		"ÜberStein", náci plakát
+	hitlerbajszos kő plakat
+	kifeszitett farkasbőr
+	collectables:
+		egy kép ahol egy giliszta maszik egy kövön (,kőben?), és egy leírás: "A kövek és a giliszták barátsága xxx-kor kezdodott, a gilisztak kilazitjak a kovek tagjait, cserebe a kovek <csinalnak valamit> (pl folddel latjak el a gilisztakat?)
+
+prototipus:
+	1 pálya:
+		1 féle padlo elem
+		1 féle plafon elem vagy siman egybefuggo plafon
+		2 féle fal
+			téglás
+			lambériás
+		2 féle ajtó:
+			egy sima nyitható
+			egy pálya vége
+		diszites:
+			lampa a plafonon
+			1 féle plakat
+	1 ellenfél:
+		sapkas kő 
+		egy naci szalaggalal keresztbe?
+	egy farkaskez egy pisztollyal
+	HUD:
+		akár placeholder elemekkel
+		DE konkret farkasfejjel !!! jobbra balra nezo animacioval??
+		minden felirat legyen fenn viszont (ammo, HP, level, fegyver a kezben, score?, armor?, kulcs slot)
+	fomenu placeholder elmeekkel, menupontokkal
+	meghalas animacio
+	palyageneralo feature
+	
+user interface
+	
+mechanikak:
+	fegyverek:
+		kés - a mancsaval csap egyet
+		pisztoly
+		machine gun
+		minigun
+	hp:
+		rohangaszo patkanyok
+	
+	kulcs:
+
+palyaelemek - palya design:
+	a kövek a fold alatt laknak, ide építenek valyatokat, banyaszeruen
+	
+	példa:
+		https://www.moddb.com/mods/unsung/images/path
+		http://harrisonbrownart.weebly.com/animation.html
+			!!!!!!!!!!!!!!!!
+			ellenfelek
+		https://www.zastavki.com/eng/Games/wallpaper-100958.htm:
+			lámpa
+			fafal
+		https://i.ytimg.com/vi/v42TxdeAQsk/maxresdefault.jpg
+			fal megtámasztás
+		https://orcz.com/images/thumb/7/70/Esohozzinsfollyminedoor.jpg/400px-Esohozzinsfollyminedoor.jpg
+			ajtó
+	
+	fal
+		https://www.vectorstock.com/royalty-free-vector/pixel-art-sprite-stone-dirt-vector-10644353
+		https://hu.pinterest.com/pin/412290540888125510/
+		földes 
+		füves földes
+		erősebb, fás
+	padlo
+	mennyzet
+	ajto
+	
+	ammo
+	etel
+		rohangalo patkanyok
+		
+	ellenfelek 2 féle legalabb
+		kőfaszi sapkaban
+			magabol kilo egy kicsi kavicsot
+			amikor meghal, akkor szetporlad
+		giliszta:
+			kutya helyett 
+			melee tamadas
+		hitler - dr Mole:
+			egy vakond
+			japan, koralaku napszemuvegben
+		hangya?
+		borz?
+	
+	dekoracio:
+		fali 3 féle legalabb
+		térbeli 2 féle
+			viragtarto helyett, gombatarto
+	kulcs
+	fegyverek 4 féle
+	
+UI:
+	arc, animacioval a current HP alapjan
+	ammo, 
+	HP, 
+	level, 
+	fegyver a kezben,
+	kulcs slot	
+	score?, 
+	armor?, 
+	
+level design
+	hat majd painben megrajzoljuk az alapjan lesz generalva, valszeg az eredeti wolfensteines palyakat lecopyzva
+	30 palya
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
