@@ -57,6 +57,8 @@ public class LevelDataImageEditor : Editor
             {
                 editing = false;
 
+                Debug.Log("Map saved");
+
                 SaveTextureAsPng();
             }
         }
