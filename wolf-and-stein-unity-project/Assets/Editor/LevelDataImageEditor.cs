@@ -15,15 +15,23 @@ public class LevelDataImageEditor : Editor
     LevelDataImage levelImage;
 
     Texture2D wall1Texture;
+    Texture2D wall2Texture;
+    Texture2D doorTexture;
+    Texture2D lampTexture;
     Texture2D tunnelTexture;
+    Texture2D spawnPosTexture;
 
-    Color currentColor = Color.black;
+    Color currentColor = Map.Wall1Color;
     bool mouseDown;
 
     private void Awake()
 	{
-        SetButtonTexture(ref wall1Texture, Color.black);
-        SetButtonTexture(ref tunnelTexture, Color.white);
+        SetButtonTexture(ref wall1Texture, Map.Wall1Color);
+        SetButtonTexture(ref wall2Texture, Map.Wall2Color);
+        SetButtonTexture(ref doorTexture, Map.DoorColor);
+        SetButtonTexture(ref lampTexture, Map.LampColor);
+        SetButtonTexture(ref tunnelTexture, Map.TunnelColor);
+        SetButtonTexture(ref spawnPosTexture, Map.SpawnPositionColor);
 	}
 
 	void SetButtonTexture(ref Texture2D buttonTexture, Color color)
@@ -69,13 +77,19 @@ public class LevelDataImageEditor : Editor
             }
         }
 
-        GUILayout.Label("Wall 1");
-        if (GUILayout.Button(wall1Texture))
-            currentColor = Color.black;
+        AddColoringButton("Wall 1", wall1Texture, Map.Wall1Color);
+        AddColoringButton("Wall 2", wall2Texture, Map.Wall2Color);
+        AddColoringButton("Door", doorTexture, Map.DoorColor);
+        AddColoringButton("Lamp", lampTexture, Map.LampColor);
+        AddColoringButton("Tunnel", tunnelTexture, Map.TunnelColor);
+        AddColoringButton("Spawn Position", spawnPosTexture, Map.SpawnPositionColor);
+    }
 
-        GUILayout.Label("Tunnel");
-        if (GUILayout.Button(tunnelTexture))
-            currentColor = Color.white;
+	private void AddColoringButton(string label, Texture2D texture, Color color)
+	{
+        GUILayout.Label(label);
+        if (GUILayout.Button(texture))
+            currentColor = color;
     }
 
 	private void SaveTextureAsPng()

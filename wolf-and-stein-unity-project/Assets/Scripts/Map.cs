@@ -15,13 +15,13 @@ public class Map:MonoBehaviourSingleton<Map>
     Transform dynamic;
     TileType[,] mapData;
 
-    readonly Color Wall1Color = Color.black;
-    readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
-    readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
-    readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
-    readonly Color TunnelColor = Color.white;
+    public static readonly Color Wall1Color = Color.black;
+    public static readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
+    public static readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
+    public static readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
+    public static readonly Color TunnelColor = Color.white;
+    public static readonly Color SpawnPositionColor = Color.magenta;
 
-    static readonly List<TileType> NoPrefabTileTypes = new List<TileType>() { TileType.TUNNEL };
 
     void Start()
     {
@@ -86,6 +86,9 @@ public class Map:MonoBehaviourSingleton<Map>
                     case TileType.LAMP:
                         PlaceDecoration(spawnPos);
                         break;
+                    case TileType.SPAWN:
+                        PlaceCharacter(spawnPos, row, col);
+                        break;
                     default:
                         break;
                 }
@@ -95,7 +98,22 @@ public class Map:MonoBehaviourSingleton<Map>
         //Debug.Log(s);
     }
 
-    private void PlaceDecoration(Vector3 spawnPos)
+	private void PlaceCharacter(Vector3 spawnPos, int row, int col)
+	{
+        Transform characterTransform = GameObject.Find("Character").transform;
+        characterTransform.position = spawnPos;
+
+        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col))
+            characterTransform.rotation = Quaternion.Euler(0, 0, 0);
+        else if (IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col))
+            characterTransform.rotation = Quaternion.Euler(0, 180, 0);
+        else if (IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1))
+            characterTransform.rotation = Quaternion.Euler(0, -90, 0);
+        else if (IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
+            characterTransform.rotation = Quaternion.Euler(0, 90, 0);
+    }
+
+	private void PlaceDecoration(Vector3 spawnPos)
     {
         Instantiate(GamePreferences.Instance.Lamp, spawnPos, Quaternion.identity, dynamic);
     }
@@ -170,8 +188,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
     private void DeleteCurrentLevel()
     {
-        foreach (Transform t in dynamic)
-            DestroyImmediate(t.gameObject);
+        for (var i = dynamic.childCount - 1; i >= 0; i--)
+            DestroyImmediate(dynamic.GetChild(i).gameObject);
     }
 
     private void ReadMapData(int level)
@@ -196,6 +214,8 @@ public class Map:MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.TUNNEL;
                 else if (c == LampColor)
                     mapData[i, j] = TileType.LAMP;
+                else if (c == SpawnPositionColor)
+                    mapData[i, j] = TileType.SPAWN;
                 else
                     throw new Exception("This color is not specified yet: " + c);
             }
@@ -218,7 +238,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
         TUNNEL,
         LAMP,
+        SPAWN,
 
-        PASSABLE = LAMP
+        PASSABLE = SPAWN
     }
 }
