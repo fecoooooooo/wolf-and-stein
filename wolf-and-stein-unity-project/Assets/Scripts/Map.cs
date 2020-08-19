@@ -9,6 +9,7 @@ public class Map:MonoBehaviourSingleton<Map>
 {
     public Color floorColor;
     public Color ceilingColor;
+    public int CurrentLevel { get; private set; }
 
     Transform floor;
     Transform ceiling;
@@ -49,7 +50,9 @@ public class Map:MonoBehaviourSingleton<Map>
     public void Generate(int level)
     {
         Debug.Log("Generatre level: " + level);
-        
+
+        CurrentLevel = level;
+
         ReadMapData(level);
         DeleteCurrentLevel();
         PlaceLevelPrefabs();
@@ -224,7 +227,12 @@ public class Map:MonoBehaviourSingleton<Map>
 
     }
 
-    public enum TileType : int
+	internal void SetLevel(int Level)
+	{
+        this.CurrentLevel = Level;
+	}
+
+	public enum TileType : int
     {
         WALL1,
         WALL2,
