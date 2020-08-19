@@ -139,8 +139,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHP: 100
-  MoveSpeed: 0.001
-  MinDistanceToOtherColliders: 0.3
+  MoveSpeed: 0.01
+  MinDistanceToOtherColliders: 0.5
+  IdleTime: 5
+  IdleChance: 0.0001
+  idleTimeLeft: 0
 --- !u!65 &930582681227135240
 BoxCollider:
   m_ObjectHideFlags: 0

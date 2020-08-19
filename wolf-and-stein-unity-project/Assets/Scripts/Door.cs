@@ -35,10 +35,25 @@ public class Door : MonoBehaviour
 	private void HandleInteraction()
 	{
 		if (Input.GetKeyDown(KeyCode.E) && CanInteract())
-		{
-			animDirection *= -1;
-			animator.SetFloat("Direction", animDirection);
-		}
+			Toggle();
+	}
+
+	public void Open()
+	{
+		animDirection = 1;
+		animator.SetFloat("Direction", animDirection);
+	}
+
+	public void Close()
+	{
+		animDirection = -1;
+		animator.SetFloat("Direction", animDirection);
+	}
+
+	public void Toggle()
+	{
+		animDirection *= -1;
+		animator.SetFloat("Direction", animDirection);
 	}
 
 	private void HandleAutoClose()
@@ -60,6 +75,83 @@ public class Door : MonoBehaviour
 	{
 		currentlyCollidingWithPathBlocker.Add(other);
 	}
+
+	internal Vector3 GetRotationAfterPass(Vector3 positionOfAsker)
+	{
+		switch (GetOrientationToMe(positionOfAsker))
+		{
+			case Orientation.UnderMe:
+				return new Vector3(0, 0, 0);
+			case Orientation.OverMe:
+				return new Vector3(0, 180, 0);
+			case Orientation.LeftToMe:
+				return new Vector3(0, 90, 0);
+			case Orientation.RightToMe:
+				return new Vector3(0, -90, 0);
+			default:
+				throw new Exception("Cant decide orientation");
+		}
+	}
+
+	internal Vector3 GetFartherPoint(Vector3 positionOfAsker)
+	{
+		switch (GetOrientationToMe(positionOfAsker))
+		{
+			case Orientation.UnderMe:
+				return transform.position + new Vector3(0, 0, .5f);
+			case Orientation.OverMe:
+				return transform.position - new Vector3(0, 0, .5f);
+			case Orientation.LeftToMe:
+				return transform.position + new Vector3(.5f, 0, 0);
+			case Orientation.RightToMe:
+				return transform.position - new Vector3(.5f, 0, 0);
+			default:
+				throw new Exception("Cant decide orientation");
+		}
+	}
+	internal Vector3 GetHitherPoint(Vector3 positionOfAsker)
+	{
+		switch (GetOrientationToMe(positionOfAsker))
+		{
+			case Orientation.UnderMe:
+				return transform.position - new Vector3(0, 0, .5f);
+			case Orientation.OverMe:
+				return transform.position + new Vector3(0, 0, .5f);
+			case Orientation.LeftToMe:
+				return transform.position - new Vector3(.5f, 0, 0);
+			case Orientation.RightToMe:
+				return transform.position + new Vector3(.5f, 0, 0);
+			default:
+				throw new Exception("Cant decide orientation");
+		}
+	}
+
+	Orientation GetOrientationToMe(Vector3 positionOfAsker)
+	{
+		bool horizontalDoor = transform.forward.x != 0;
+
+		if (horizontalDoor)
+		{
+			float orientation = Mathf.Sign(transform.position.x - positionOfAsker.x);
+			bool toTheLeft = orientation == 1;
+
+			if (toTheLeft)
+				return Orientation.LeftToMe;
+			else
+				return Orientation.RightToMe;
+		}
+		else //verticalDoor
+		{
+			float orientation = Mathf.Sign(transform.position.z - positionOfAsker.z);
+			bool toBottom = orientation == 1;
+
+			if (toBottom)
+				return Orientation.UnderMe;
+			else
+				return Orientation.OverMe;
+		}
+	}
+	
 
 	private void OnTriggerExit(Collider other)
 	{
@@ -94,4 +186,13 @@ public class Door : MonoBehaviour
 
 		pathBlockCollider.isTrigger = openingDoor ? true : false;
 	}
+
+	enum Orientation
+	{
+		UnderMe,
+		OverMe,
+		LeftToMe,
+		RightToMe
+	}
+
 }
