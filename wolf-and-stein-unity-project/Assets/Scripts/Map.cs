@@ -18,6 +18,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
     public static readonly Color Wall1Color = Color.black;
     public static readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
+    public static readonly Color WoodColumnColor = new Color32(166, 109, 109, 255);
+    public static readonly Color StoneColumnColor = new Color32(94, 0, 0, 255);
     public static readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
     public static readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
     public static readonly Color TunnelColor = Color.white;
@@ -85,6 +87,12 @@ public class Map:MonoBehaviourSingleton<Map>
                         break;
                     case TileType.WALL2:
                         PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2);
+                        break;
+                    case TileType.WOOD_COLUMN:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.WoodColumn);
+                        break;
+                    case TileType.STONE_COLUMN:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.StoneColumn);
                         break;
                     case TileType.DOOR:
                         PlaceDoor(spawnPos, row, col);
@@ -231,6 +239,10 @@ public class Map:MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.WALL1;
                 else if (c == Wall2Color)
                     mapData[i, j] = TileType.WALL2;
+                else if (c == WoodColumnColor)
+                    mapData[i, j] = TileType.WOOD_COLUMN;
+                else if (c == StoneColumnColor)
+                    mapData[i, j] = TileType.STONE_COLUMN;
                 else if (c == DoorColor)
                     mapData[i, j] = TileType.DOOR;
                 else if (c == TunnelColor)
@@ -266,8 +278,10 @@ public class Map:MonoBehaviourSingleton<Map>
     {
         WALL1,
         WALL2,
+        WOOD_COLUMN,
+        STONE_COLUMN,
         
-        UNPASSABLE = WALL2,
+        UNPASSABLE = STONE_COLUMN,
         
         DOOR,
 

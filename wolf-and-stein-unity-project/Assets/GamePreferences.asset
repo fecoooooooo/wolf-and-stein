@@ -15,6 +15,10 @@ MonoBehaviour:
   DoorAutoCloseTime: 3
   Wall1: {fileID: 7790637854563171827, guid: 08d756e6b138aae4b89103be25bb933e, type: 3}
   Wall2: {fileID: 7790637854563171827, guid: be08e3ea320d2af40944c1c097c644db, type: 3}
+  WoodColumn: {fileID: 4037541320493713563, guid: a30db23af23d2314db952be63d747ee3,
+    type: 3}
+  StoneColumn: {fileID: 5453442985087809630, guid: 7a2d891dd20e7f94d9bd71fe46700599,
+    type: 3}
   Door: {fileID: 7790637854563171827, guid: 568d4190bdbba8e49a304594b61e4cc2, type: 3}
   DoorFrame: {fileID: 7790637854563171827, guid: 36d5ee987ef876b4f804dcef5139010b,
     type: 3}

@@ -16,6 +16,8 @@ public class LevelDataImageEditor : Editor
 
     Texture2D wall1Texture;
     Texture2D wall2Texture;
+    Texture2D woodColumTexture;
+    Texture2D stoneColumTexture;
     Texture2D doorTexture;
     Texture2D lampTexture;
     Texture2D tunnelTexture;
@@ -33,6 +35,8 @@ public class LevelDataImageEditor : Editor
 	{
         SetButtonTexture(ref wall1Texture, Map.Wall1Color);
         SetButtonTexture(ref wall2Texture, Map.Wall2Color);
+        SetButtonTexture(ref woodColumTexture, Map.WoodColumnColor);
+        SetButtonTexture(ref stoneColumTexture, Map.StoneColumnColor);
         SetButtonTexture(ref doorTexture, Map.DoorColor);
         SetButtonTexture(ref lampTexture, Map.LampColor);
         SetButtonTexture(ref tunnelTexture, Map.TunnelColor);
@@ -91,6 +95,8 @@ public class LevelDataImageEditor : Editor
 
         AddColoringButton("Wall 1", wall1Texture, Map.Wall1Color);
         AddColoringButton("Wall 2", wall2Texture, Map.Wall2Color);
+        AddColoringButton("Wood column", woodColumTexture, Map.WoodColumnColor);
+        AddColoringButton("Stone column", stoneColumTexture, Map.StoneColumnColor);
         AddColoringButton("Door", doorTexture, Map.DoorColor);
         AddColoringButton("Lamp", lampTexture, Map.LampColor);
         AddColoringButton("Tunnel", tunnelTexture, Map.TunnelColor);
