@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,16 +11,12 @@ public class WeaponUI : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        Character.instance.WeaponChanged += OnWeaponChanged;
+        Character.instance.ShootWeapon += OnShootWeapon;
     }
 
-    // Update is called once per frame
     void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-            Speed = 1;
-            animator.SetFloat("Speed", Speed);
-		}   
     }
 
     public void OnReachAnimEnd()
@@ -27,4 +24,32 @@ public class WeaponUI : MonoBehaviour
         Speed = 0;
         animator.SetFloat("Speed", Speed);
     }
+
+    private void OnWeaponChanged(object sender, EventArgs e)
+	{
+		switch (Character.instance.CurrentWeapon)
+		{
+			case WeaponType.Paw:
+				animator.SetTrigger("Paw");
+				break;
+			case WeaponType.Pistol:
+				animator.SetTrigger("Pistol");
+				break;
+			case WeaponType.MachineGun:
+				animator.SetTrigger("MachineGun");
+				break;
+			case WeaponType.ChainGun:
+				animator.SetTrigger("ChainGun");
+				break;
+			default:
+				throw new Exception("No Such weapontype exists");
+		}
+	}
+
+    private void OnShootWeapon(object sender, EventArgs e)
+	{
+		Speed = 1;
+		animator.SetFloat("Speed", Speed);
+	}
+
 }

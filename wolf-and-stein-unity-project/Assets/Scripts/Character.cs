@@ -20,8 +20,12 @@ public class Character : MonoBehaviourSingleton<Character>
     const float MoveSpeed = 5f;
     float moveVector = 0;
     float turnVector = 0;
+
+    public WeaponType CurrentWeapon { get; private set; } = WeaponType.Pistol;
     
     public EventHandler ShouldUpdateUI;
+    public EventHandler WeaponChanged;
+    public EventHandler ShootWeapon;
 
     private void Start()
     {
@@ -32,7 +36,32 @@ public class Character : MonoBehaviourSingleton<Character>
     {
         moveVector = Input.GetAxisRaw("Vertical");
         turnVector = Input.GetAxisRaw("Horizontal");
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+            EquipWeapon(WeaponType.Paw);
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
+            EquipWeapon(WeaponType.Pistol);
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+            EquipWeapon(WeaponType.MachineGun);
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+            EquipWeapon(WeaponType.ChainGun);
+        else if (Input.GetKeyDown(KeyCode.Space))
+            Shoot();
     }
+
+	private void Shoot()
+	{
+
+        ShootWeapon?.Invoke(this, null);
+	}
+
+	private void EquipWeapon(WeaponType weapon)
+	{
+        CurrentWeapon = weapon;
+
+        WeaponChanged?.Invoke(this, null);
+	}
 
 	internal void SetValues(int score, int lives, int hP, int ammo, int keys, int notes, bool hasMachinGun, bool hasChainGun)
 	{
@@ -46,6 +75,7 @@ public class Character : MonoBehaviourSingleton<Character>
         this.HasChainGun = hasChainGun;
 
         ShouldUpdateUI?.Invoke(this, null);
+        WeaponChanged?.Invoke(this, null);
     }
 
 	private void FixedUpdate()
@@ -83,4 +113,12 @@ public class Character : MonoBehaviourSingleton<Character>
         HP += amountToadd;
         ShouldUpdateUI?.Invoke(this, null);
     }
+}
+
+public enum WeaponType
+{
+    Paw,
+    Pistol,
+    MachineGun,
+    ChainGun
 }
