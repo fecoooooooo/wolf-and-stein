@@ -11,4 +11,8 @@ public class Food: Pickable
         Character.instance.AddHP(amountToAdd);
     }
 
+	public override bool ExtraCondition()
+	{
+		return base.ExtraCondition() && Character.instance.HP < Character.MAX_HP;
+	}
 }

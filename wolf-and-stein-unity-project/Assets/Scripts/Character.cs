@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Character : MonoBehaviourSingleton<Character>
 {
+    public const int MAX_HP = 100;
+
     public int Score { get; private set; }
     public int Lives { get; private set; }
     public int HP { get; private set; }
@@ -38,13 +40,13 @@ public class Character : MonoBehaviourSingleton<Character>
         turnVector = Input.GetAxisRaw("Horizontal");
 
 
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
             EquipWeapon(WeaponType.Paw);
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
-            EquipWeapon(WeaponType.Pistol);
         else if (Input.GetKeyDown(KeyCode.Alpha2))
-            EquipWeapon(WeaponType.MachineGun);
+            EquipWeapon(WeaponType.Pistol);
         else if (Input.GetKeyDown(KeyCode.Alpha3))
+            EquipWeapon(WeaponType.MachineGun);
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
             EquipWeapon(WeaponType.ChainGun);
         else if (Input.GetKeyDown(KeyCode.Space))
             Shoot();

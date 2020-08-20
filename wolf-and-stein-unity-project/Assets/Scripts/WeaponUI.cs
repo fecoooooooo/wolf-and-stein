@@ -15,10 +15,6 @@ public class WeaponUI : MonoBehaviour
         Character.instance.ShootWeapon += OnShootWeapon;
     }
 
-    void Update()
-    {
-    }
-
     public void OnReachAnimEnd()
 	{
         Speed = 0;
