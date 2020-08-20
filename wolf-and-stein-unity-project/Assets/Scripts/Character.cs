@@ -53,4 +53,34 @@ public class Character : MonoBehaviourSingleton<Character>
         rigidbody.velocity = transform.forward * moveVector * MoveSpeed;
         rigidbody.angularVelocity = transform.up * turnVector * TurnSpeed;
     }
+
+    public void AddKey(int amountToadd)
+    {
+        Keys += amountToadd;
+        ShouldUpdateUI?.Invoke(this, null);
+    }
+
+    internal void AddNote(int amountToadd)
+    {
+        Notes += amountToadd;
+        ShouldUpdateUI?.Invoke(this, null);
+    }
+
+    internal void AddAmmo(int amountToadd)
+    {
+        Ammo += amountToadd;
+        ShouldUpdateUI?.Invoke(this, null);
+    }  
+    
+    internal void AddScore(int amountToadd)
+    {
+        Score += amountToadd;
+        ShouldUpdateUI?.Invoke(this, null);
+    }  
+    
+    internal void AddHP(int amountToadd)
+    {
+        HP += amountToadd;
+        ShouldUpdateUI?.Invoke(this, null);
+    }
 }

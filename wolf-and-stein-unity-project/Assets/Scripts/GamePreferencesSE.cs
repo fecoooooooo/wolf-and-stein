@@ -12,4 +12,9 @@ public class GamePreferencesSE : ScriptableObject
 	public GameObject Door;
 	public GameObject DoorFrame;
 	public GameObject Lamp;
+	public GameObject Food;
+	public GameObject Ammo;
+	public GameObject Key;
+	public GameObject Note;
+	public GameObject Treasure;
 }

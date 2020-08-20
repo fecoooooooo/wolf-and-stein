@@ -22,6 +22,11 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
     public static readonly Color TunnelColor = Color.white;
     public static readonly Color SpawnPositionColor = Color.magenta;
+    public static readonly Color FoodColor = new Color32(55, 255, 0, 255);
+    public static readonly Color AmmoColor = new Color32(170, 0, 232, 255);
+    public static readonly Color KeyColor = new Color32(183, 255, 0, 255);
+    public static readonly Color NoteColor = new Color32(0, 4, 255, 255);
+    public static readonly Color TreasureColor = new Color32(237, 255, 135, 255);
 
 
     void Start()
@@ -87,10 +92,25 @@ public class Map:MonoBehaviourSingleton<Map>
                     case TileType.TUNNEL:
                         break;           
                     case TileType.LAMP:
-                        PlaceDecoration(spawnPos);
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Lamp);
                         break;
                     case TileType.SPAWN:
                         PlaceCharacter(spawnPos, row, col);
+                        break;
+                    case TileType.FOOD:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Food);
+                        break;
+                    case TileType.AMMO:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Ammo);
+                        break;
+                    case TileType.KEY:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Key);
+                        break;
+                    case TileType.NOTE:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Note);
+                        break;
+                    case TileType.TREASURE:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.Treasure);
                         break;
                     default:
                         break;
@@ -116,9 +136,9 @@ public class Map:MonoBehaviourSingleton<Map>
             characterTransform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
-	private void PlaceDecoration(Vector3 spawnPos)
+	private void PlaceSimple(Vector3 spawnPos, GameObject prefab)
     {
-        Instantiate(GamePreferences.Instance.Lamp, spawnPos, Quaternion.identity, dynamic);
+        Instantiate(prefab, spawnPos, Quaternion.identity, dynamic);
     }
 
     private void PlaceDoor(Vector3 spawnPos, int row, int col)
@@ -219,6 +239,16 @@ public class Map:MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.LAMP;
                 else if (c == SpawnPositionColor)
                     mapData[i, j] = TileType.SPAWN;
+                else if (c == FoodColor)
+                    mapData[i, j] = TileType.FOOD;
+                else if (c == AmmoColor)
+                    mapData[i, j] = TileType.AMMO;
+                else if (c == KeyColor)
+                    mapData[i, j] = TileType.KEY;
+                else if (c == NoteColor)
+                    mapData[i, j] = TileType.NOTE;
+                else if (c == TreasureColor)
+                    mapData[i, j] = TileType.TREASURE;
                 else
                     throw new Exception("This color is not specified yet: " + c);
             }
@@ -243,9 +273,15 @@ public class Map:MonoBehaviourSingleton<Map>
 
         SEMIPASSABLE = DOOR,
 
-
         TUNNEL,
         LAMP,
+        
+        FOOD,
+        AMMO,
+        KEY,
+        NOTE,
+        TREASURE,
+
         SPAWN,
 
         PASSABLE = SPAWN

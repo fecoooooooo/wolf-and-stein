@@ -19,3 +19,9 @@ MonoBehaviour:
   DoorFrame: {fileID: 7790637854563171827, guid: 36d5ee987ef876b4f804dcef5139010b,
     type: 3}
   Lamp: {fileID: 7790637854563171827, guid: 2099b93fa8cc69f4ca993f167d160873, type: 3}
+  Food: {fileID: 1399509266940884395, guid: 6c5e1dc5428dd0d4b97ec8c847fb5053, type: 3}
+  Ammo: {fileID: 1399509266940884395, guid: ed29244f26bffdb489a6d981f14b2257, type: 3}
+  Key: {fileID: 1399509266940884395, guid: 56284a2c1a0a4dc438f97efded837a7d, type: 3}
+  Note: {fileID: 1399509266940884395, guid: 354e659e0038eea419817c939c87f99f, type: 3}
+  Treasure: {fileID: 1399509266940884395, guid: 1a200d404568657418cb3fe73c43f7b6,
+    type: 3}

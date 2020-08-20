@@ -20,6 +20,11 @@ public class LevelDataImageEditor : Editor
     Texture2D lampTexture;
     Texture2D tunnelTexture;
     Texture2D spawnPosTexture;
+    Texture2D foodTexture;
+    Texture2D ammoTexture;
+    Texture2D keyTexture;
+    Texture2D noteTexture;
+    Texture2D treasureTexture;
 
     Color currentColor = Map.Wall1Color;
     bool mouseDown;
@@ -32,6 +37,11 @@ public class LevelDataImageEditor : Editor
         SetButtonTexture(ref lampTexture, Map.LampColor);
         SetButtonTexture(ref tunnelTexture, Map.TunnelColor);
         SetButtonTexture(ref spawnPosTexture, Map.SpawnPositionColor);
+        SetButtonTexture(ref foodTexture, Map.FoodColor);
+        SetButtonTexture(ref ammoTexture, Map.AmmoColor);
+        SetButtonTexture(ref keyTexture, Map.KeyColor);
+        SetButtonTexture(ref noteTexture, Map.NoteColor);
+        SetButtonTexture(ref treasureTexture, Map.TreasureColor);
 	}
 
 	void SetButtonTexture(ref Texture2D buttonTexture, Color color)
@@ -85,6 +95,11 @@ public class LevelDataImageEditor : Editor
         AddColoringButton("Lamp", lampTexture, Map.LampColor);
         AddColoringButton("Tunnel", tunnelTexture, Map.TunnelColor);
         AddColoringButton("Spawn Position", spawnPosTexture, Map.SpawnPositionColor);
+        AddColoringButton("Food", foodTexture, Map.FoodColor);
+        AddColoringButton("Ammo", ammoTexture, Map.AmmoColor);
+        AddColoringButton("Key", keyTexture, Map.KeyColor);
+        AddColoringButton("Note", noteTexture, Map.NoteColor);
+        AddColoringButton("Treasure", treasureTexture, Map.TreasureColor);
     }
 
 	private void AddColoringButton(string label, Texture2D texture, Color color)
