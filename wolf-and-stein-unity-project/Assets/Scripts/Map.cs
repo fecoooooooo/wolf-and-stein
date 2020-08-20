@@ -11,11 +11,6 @@ public class Map:MonoBehaviourSingleton<Map>
     public Color ceilingColor;
     public int CurrentLevel { get; private set; }
 
-    Transform floor;
-    Transform ceiling;
-    Transform dynamic;
-    TileType[,] mapData;
-
     public static readonly Color Wall1Color = Color.black;
     public static readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
     public static readonly Color WoodColumnColor = new Color32(166, 109, 109, 255);
@@ -30,13 +25,76 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color NoteColor = new Color32(0, 4, 255, 255);
     public static readonly Color TreasureColor = new Color32(237, 255, 135, 255);
 
+    public EventHandler MinimapUpdated;
+
+    Transform floor;
+    Transform ceiling;
+    Transform dynamic;
+    TileType[,] mapData;
+    public Texture2D MinimapTexture { get; private set; }
+
+    Vector2Int playerCoords;
+    Vector2Int prevPlayerCoords;
+    Color previousColorOnPlayerCoord;
 
     void Start()
     {
         dynamic = transform.Find("Dynamic");
-        dynamic = transform.Find("Dynamic");
+
+        LoadLevel(1);
 
         SetFloorAndCeiling();
+    }
+
+	private void Update()
+	{
+        if (!Application.isPlaying)
+            return;
+
+        playerCoords = GetPlayerCoords();
+
+        if(playerCoords != prevPlayerCoords)
+		{
+            MinimapTexture.SetPixel(prevPlayerCoords.x, prevPlayerCoords.y, previousColorOnPlayerCoord);
+            previousColorOnPlayerCoord = MinimapTexture.GetPixel(playerCoords.x, playerCoords.y);
+
+            MinimapTexture.SetPixel(playerCoords.x, playerCoords.y, Color.red);
+            MinimapTexture.Apply();
+
+            MinimapUpdated?.Invoke(this, null);
+        }
+
+        prevPlayerCoords = playerCoords;
+        //Debug.Log(GetPlayerCoords());
+	}
+
+	private Vector2Int GetPlayerCoords()
+	{
+        int x = Mathf.FloorToInt(Character.instance.transform.position.x);
+        int y = Mathf.FloorToInt(Mathf.Abs(Character.instance.transform.position.z)); //since Z goes on the negative direction
+
+        return new Vector2Int(x, y);
+	}
+
+	public void LoadLevel(int level)
+	{
+        Generate(level);
+
+        MinimapTexture = new Texture2D(mapData.GetLength(0), mapData.GetLength(1));
+        MinimapTexture.filterMode = FilterMode.Point;
+        MinimapTexture.anisoLevel = 1;
+        MinimapTexture.mipMapBias = -0.5f;
+
+        Color[] colors = new Color[MinimapTexture.width * MinimapTexture.height];
+
+        for(int i = 0; i < mapData.GetLength(0); ++i)
+		{
+            for(int j = 0; j < mapData.GetLength(1); ++j)
+                colors[i * mapData.GetLength(0) + j] = IsPassableOnCoord(i, j) ? Color.white : Color.black;
+		}
+
+        MinimapTexture.SetPixels(colors);
+        MinimapTexture.Apply();
     }
 
     public void SetFloorAndCeiling()
@@ -265,11 +323,9 @@ public class Map:MonoBehaviourSingleton<Map>
                     throw new Exception("This color is not specified yet: " + c);
             }
         }
-
-
     }
 
-	internal void SetLevel(int Level)
+    internal void SetLevel(int Level)
 	{
         this.CurrentLevel = Level;
 	}

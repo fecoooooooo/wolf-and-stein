@@ -22,6 +22,7 @@ public class HUD : MonoBehaviour
     Sprite machineGunWeaponImg;
     Sprite chainGunWeaponImg;
 
+    RawImage minimapImg;
 
     void Start()
     {
@@ -39,9 +40,12 @@ public class HUD : MonoBehaviour
         pistolWeaponImg = Resources.Load<Sprite>("inventory_pistol");
         machineGunWeaponImg = Resources.Load<Sprite>("inventory_pistol");
         chainGunWeaponImg = Resources.Load<Sprite>("inventory_pistol");
+        
+        minimapImg = transform.Find("MiniMap").GetComponent<RawImage>();
 
         Character.instance.ShouldUpdateUI += OnUpdateUI;
         Character.instance.WeaponChanged += OnWeaponChanged;
+        Map.instance.MinimapUpdated += OnMiniMapUpdated;
     }
 
     private void OnUpdateUI(object sender, EventArgs e)
@@ -74,5 +78,10 @@ public class HUD : MonoBehaviour
             default:
                 throw new Exception("No Such weapontype exists");
         }
+    }
+
+    void OnMiniMapUpdated(object sender, EventArgs e)
+	{
+        minimapImg.texture = Map.instance.MinimapTexture;
     }
 }
