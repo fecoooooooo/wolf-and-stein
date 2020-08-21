@@ -24,6 +24,8 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color KeyColor = new Color32(183, 255, 0, 255);
     public static readonly Color NoteColor = new Color32(0, 4, 255, 255);
     public static readonly Color TreasureColor = new Color32(237, 255, 135, 255);
+    public static readonly Color MachineGunColor = new Color32(8, 41, 17, 255);
+    public static readonly Color ChainGunColor = new Color32(98, 122, 105, 255);
 
     public EventHandler MinimapUpdated;
 
@@ -63,7 +65,7 @@ public class Map:MonoBehaviourSingleton<Map>
 
             MinimapUpdated?.Invoke(this, null);
         }
-
+        
         prevPlayerCoords = playerCoords;
         //Debug.Log(GetPlayerCoords());
 	}
@@ -177,6 +179,12 @@ public class Map:MonoBehaviourSingleton<Map>
                         break;
                     case TileType.TREASURE:
                         PlaceSimple(spawnPos, GamePreferences.Instance.Treasure);
+                        break;
+                    case TileType.MACHINE_GUN:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.MachineGun);
+                        break;
+                    case TileType.CHAIN_GUN:
+                        PlaceSimple(spawnPos, GamePreferences.Instance.ChainGun);
                         break;
                     default:
                         break;
@@ -319,6 +327,10 @@ public class Map:MonoBehaviourSingleton<Map>
                     mapData[i, j] = TileType.NOTE;
                 else if (c == TreasureColor)
                     mapData[i, j] = TileType.TREASURE;
+                else if (c == MachineGunColor)
+                    mapData[i, j] = TileType.MACHINE_GUN;
+                else if (c == ChainGunColor)
+                    mapData[i, j] = TileType.CHAIN_GUN;
                 else
                     throw new Exception("This color is not specified yet: " + c);
             }
@@ -351,6 +363,8 @@ public class Map:MonoBehaviourSingleton<Map>
         KEY,
         NOTE,
         TREASURE,
+        MACHINE_GUN,
+        CHAIN_GUN,
 
         SPAWN,
 

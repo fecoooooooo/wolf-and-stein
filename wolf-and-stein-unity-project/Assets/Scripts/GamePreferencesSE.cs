@@ -19,4 +19,6 @@ public class GamePreferencesSE : ScriptableObject
 	public GameObject Key;
 	public GameObject Note;
 	public GameObject Treasure;
+	public GameObject MachineGun;
+	public GameObject ChainGun;
 }

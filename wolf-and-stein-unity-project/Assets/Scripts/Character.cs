@@ -7,7 +7,7 @@ public class Character : MonoBehaviourSingleton<Character>
 {
     public const int MAX_HP = 100;
 
-    public int Score { get; private set; }
+	public int Score { get; private set; }
     public int Lives { get; private set; }
     public int HP { get; private set; }
     public int Ammo { get; private set; }
@@ -114,6 +114,32 @@ public class Character : MonoBehaviourSingleton<Character>
     {
         HP += amountToadd;
         ShouldUpdateUI?.Invoke(this, null);
+    }
+
+    internal void AddWeapon(WeaponType weaponType)
+    {
+        bool hadWeapon = true;
+
+		switch (weaponType)
+		{
+			case WeaponType.MachineGun:
+                if (!HasMachinGun)
+                    hadWeapon = false;
+
+                HasMachinGun = true;
+				break;
+			case WeaponType.ChainGun:
+                if (!HasChainGun)
+                    hadWeapon = false;
+
+                HasChainGun = true;
+				break;
+			default:
+				break;
+		}
+
+        if (!hadWeapon)
+            EquipWeapon(weaponType);
     }
 }
 

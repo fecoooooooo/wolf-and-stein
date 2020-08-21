@@ -27,6 +27,8 @@ public class LevelDataImageEditor : Editor
     Texture2D keyTexture;
     Texture2D noteTexture;
     Texture2D treasureTexture;
+    Texture2D machineGunTexture;
+    Texture2D chainGunTexture;
 
     Color currentColor = Map.Wall1Color;
     bool mouseDown;
@@ -46,6 +48,8 @@ public class LevelDataImageEditor : Editor
         SetButtonTexture(ref keyTexture, Map.KeyColor);
         SetButtonTexture(ref noteTexture, Map.NoteColor);
         SetButtonTexture(ref treasureTexture, Map.TreasureColor);
+        SetButtonTexture(ref machineGunTexture, Map.MachineGunColor);
+        SetButtonTexture(ref chainGunTexture, Map.ChainGunColor);
 	}
 
 	void SetButtonTexture(ref Texture2D buttonTexture, Color color)
@@ -106,6 +110,8 @@ public class LevelDataImageEditor : Editor
         AddColoringButton("Key", keyTexture, Map.KeyColor);
         AddColoringButton("Note", noteTexture, Map.NoteColor);
         AddColoringButton("Treasure", treasureTexture, Map.TreasureColor);
+        AddColoringButton("Machine gun", machineGunTexture, Map.MachineGunColor);
+        AddColoringButton("Chain gun", chainGunTexture, Map.ChainGunColor);
     }
 
 	private void AddColoringButton(string label, Texture2D texture, Color color)

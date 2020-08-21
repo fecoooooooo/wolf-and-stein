@@ -38,8 +38,8 @@ public class HUD : MonoBehaviour
 
         pawWeaponImg = Resources.Load<Sprite>("inventory_paw");
         pistolWeaponImg = Resources.Load<Sprite>("inventory_pistol");
-        machineGunWeaponImg = Resources.Load<Sprite>("inventory_pistol");
-        chainGunWeaponImg = Resources.Load<Sprite>("inventory_pistol");
+        machineGunWeaponImg = Resources.Load<Sprite>("inventory_rifle");
+        chainGunWeaponImg = Resources.Load<Sprite>("inventory_chaingun");
         
         minimapImg = transform.Find("MiniMap").GetComponent<RawImage>();
 
