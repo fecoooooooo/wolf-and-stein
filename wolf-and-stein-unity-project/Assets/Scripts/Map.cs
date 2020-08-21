@@ -39,14 +39,33 @@ public class Map:MonoBehaviourSingleton<Map>
     Vector2Int prevPlayerCoords;
     Color previousColorOnPlayerCoord;
 
+    List<Enemy> enemies = new List<Enemy>();
+
     void Start()
     {
         dynamic = transform.Find("Dynamic");
-
-        LoadLevel(1);
-
         SetFloorAndCeiling();
+
+        if (Application.isPlaying)
+        {
+            LoadLevel(1);
+            Character.instance.ShootWeapon += OnShootWeapon;
+        }
     }
+
+    void OnShootWeapon(object sender, EventArgs e)
+	{
+        enemies.RemoveAll(en => en == null);
+
+        foreach(Enemy en in enemies)
+		{
+            int layerMask = 1 << LayerMask.NameToLayer("Blockers");
+            if(false == Physics.Linecast(Character.instance.transform.position, en.transform.position, layerMask, QueryTriggerInteraction.Ignore))
+			{
+                en.TakeDamage(10);
+			}
+		}
+	}
 
 	private void Update()
 	{
@@ -73,7 +92,11 @@ public class Map:MonoBehaviourSingleton<Map>
 	private Vector2Int GetPlayerCoords()
 	{
         int x = Mathf.FloorToInt(Character.instance.transform.position.x);
-        int y = Mathf.FloorToInt(Mathf.Abs(Character.instance.transform.position.z)); //since Z goes on the negative direction
+        x += Character.instance.transform.position.x % 1 < .5f ? 0 : 1;
+
+        float absZ = Mathf.Abs(Character.instance.transform.position.z); //since Z goes on the negative direction
+        int y = Mathf.FloorToInt(absZ); 
+        y += absZ % 1 < .5f ? 0 : 1;
 
         return new Vector2Int(x, y);
 	}
@@ -81,7 +104,18 @@ public class Map:MonoBehaviourSingleton<Map>
 	public void LoadLevel(int level)
 	{
         Generate(level);
+        GenerateMinimap();
+        CollectEnemies();
+    }
 
+	private void CollectEnemies()
+	{
+        Transform enemiesTransform = transform.Find("Enemies(move this to dynamic later)");
+        enemies.AddRange(enemiesTransform.GetComponentsInChildren<Enemy>());
+    }
+
+	void GenerateMinimap()
+	{
         MinimapTexture = new Texture2D(mapData.GetLength(0), mapData.GetLength(1));
         MinimapTexture.filterMode = FilterMode.Point;
         MinimapTexture.anisoLevel = 1;
@@ -89,11 +123,11 @@ public class Map:MonoBehaviourSingleton<Map>
 
         Color[] colors = new Color[MinimapTexture.width * MinimapTexture.height];
 
-        for(int i = 0; i < mapData.GetLength(0); ++i)
-		{
-            for(int j = 0; j < mapData.GetLength(1); ++j)
+        for (int i = 0; i < mapData.GetLength(0); ++i)
+        {
+            for (int j = 0; j < mapData.GetLength(1); ++j)
                 colors[i * mapData.GetLength(0) + j] = IsPassableOnCoord(i, j) ? Color.white : Color.black;
-		}
+        }
 
         MinimapTexture.SetPixels(colors);
         MinimapTexture.Apply();

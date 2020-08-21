@@ -29,3 +29,7 @@ MonoBehaviour:
   Note: {fileID: 1399509266940884395, guid: 354e659e0038eea419817c939c87f99f, type: 3}
   Treasure: {fileID: 1399509266940884395, guid: 1a200d404568657418cb3fe73c43f7b6,
     type: 3}
+  MachineGun: {fileID: 5186376336668815858, guid: a76c859e869c0ed40b117c48bd9be9fd,
+    type: 3}
+  ChainGun: {fileID: 7844223814826930866, guid: cd70f82938014414cb8e40cc654677c6,
+    type: 3}

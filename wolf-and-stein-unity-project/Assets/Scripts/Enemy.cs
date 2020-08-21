@@ -5,11 +5,13 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float MaxHP = 100f;
+
     public float MoveSpeed = .01f;
     public float MinDistanceToOtherColliders = .5f;
     public float IdleTime = 5f;
     public float IdleChance = 0.002f;
 
+    float currentHp;
     bool chasing = false;
     
     const float TARGET_REACHED_DISTANCE = .01f;
@@ -24,6 +26,8 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        currentHp = MaxHP;
+
         targetDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
         targetDebug.localScale = new Vector3(.2f, .2f, .2f);
         targetDebug.GetComponent<MeshRenderer>().material = Resources.Load<Material>("DebugMaterial");
@@ -85,5 +89,20 @@ public class Enemy : MonoBehaviour
         targetDebug.position = hasTarget ? currentTarget : new Vector3(0, -100, 0);
 
         transform.position += transform.forward * MoveSpeed;
+	}
+
+	internal void TakeDamage(float damage)
+	{
+        currentHp -= damage;
+
+        Debug.Log($"{name} hp: {currentHp}");
+
+        if (currentHp <= 0)
+            Die();
+    }
+
+	private void Die()
+	{
+        Destroy(gameObject);
 	}
 }
