@@ -45,7 +45,7 @@ public class HUD : MonoBehaviour
 
         Character.instance.ShouldUpdateUI += OnUpdateUI;
         Character.instance.WeaponChanged += OnWeaponChanged;
-        Map.instance.MinimapUpdated += OnMiniMapUpdated;
+        Map.instance.MiniMap.MinimapUpdated += OnMiniMapUpdated;
     }
 
     private void OnUpdateUI(object sender, EventArgs e)
@@ -82,6 +82,6 @@ public class HUD : MonoBehaviour
 
     void OnMiniMapUpdated(object sender, EventArgs e)
 	{
-        minimapImg.texture = Map.instance.MinimapTexture;
+        minimapImg.texture = Map.instance.MiniMap.DynamicMinimapTexture;
     }
 }

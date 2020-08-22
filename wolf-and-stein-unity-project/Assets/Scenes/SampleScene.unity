@@ -1677,6 +1677,7 @@ GameObject:
   m_Component:
   - component: {fileID: 81104818}
   - component: {fileID: 81104817}
+  - component: {fileID: 81104819}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -1715,6 +1716,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &81104819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81104816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f0d8d71f97fdec489eefeeb2ff32ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &81246755
 GameObject:
   m_ObjectHideFlags: 0
@@ -29200,7 +29213,7 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 8fca3e6bf8c4de946a22917f2e541bd5, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 0.7
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

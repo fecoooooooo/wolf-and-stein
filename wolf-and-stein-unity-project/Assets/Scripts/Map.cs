@@ -27,21 +27,22 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color MachineGunColor = new Color32(8, 41, 17, 255);
     public static readonly Color ChainGunColor = new Color32(98, 122, 105, 255);
 
-    public EventHandler MinimapUpdated;
-
     Transform floor;
     Transform ceiling;
     Transform dynamic;
-    TileType[,] mapData;
-    public Texture2D MinimapTexture { get; private set; }
-
-    Vector2Int playerCoords;
-    Vector2Int prevPlayerCoords;
-    Color previousColorOnPlayerCoord;
+    public TileType[,] MapData { get; private set; }
 
     List<Enemy> enemies = new List<Enemy>();
 
-    void Start()
+    public MiniMap MiniMap { get; private set; }
+
+	protected override void OnAwake()
+	{
+        base.OnAwake();
+        MiniMap = GetComponent<MiniMap>();
+	}
+
+	void Start()
     {
         dynamic = transform.Find("Dynamic");
         SetFloorAndCeiling();
@@ -58,44 +59,12 @@ public class Map:MonoBehaviourSingleton<Map>
         return enemies;
 	}
 
-	private void Update()
-	{
-        if (!Application.isPlaying)
-            return;
 
-        playerCoords = GetPlayerCoords();
-
-        if(playerCoords != prevPlayerCoords)
-		{
-            MinimapTexture.SetPixel(prevPlayerCoords.x, prevPlayerCoords.y, previousColorOnPlayerCoord);
-            previousColorOnPlayerCoord = MinimapTexture.GetPixel(playerCoords.x, playerCoords.y);
-
-            MinimapTexture.SetPixel(playerCoords.x, playerCoords.y, Color.red);
-            MinimapTexture.Apply();
-
-            MinimapUpdated?.Invoke(this, null);
-        }
-        
-        prevPlayerCoords = playerCoords;
-        //Debug.Log(GetPlayerCoords());
-	}
-
-	private Vector2Int GetPlayerCoords()
-	{
-        int x = Mathf.FloorToInt(Character.instance.transform.position.x);
-        x += Character.instance.transform.position.x % 1 < .5f ? 0 : 1;
-
-        float absZ = Mathf.Abs(Character.instance.transform.position.z); //since Z goes on the negative direction
-        int y = Mathf.FloorToInt(absZ); 
-        y += absZ % 1 < .5f ? 0 : 1;
-
-        return new Vector2Int(x, y);
-	}
 
 	public void LoadLevel(int level)
 	{
         Generate(level);
-        GenerateMinimap();
+        MiniMap.GenerateMaps();
         CollectEnemies();
     }
 
@@ -103,25 +72,6 @@ public class Map:MonoBehaviourSingleton<Map>
 	{
         Transform enemiesTransform = transform.Find("Enemies(move this to dynamic later)");
         enemies.AddRange(enemiesTransform.GetComponentsInChildren<Enemy>());
-    }
-
-	void GenerateMinimap()
-	{
-        MinimapTexture = new Texture2D(mapData.GetLength(0), mapData.GetLength(1));
-        MinimapTexture.filterMode = FilterMode.Point;
-        MinimapTexture.anisoLevel = 1;
-        MinimapTexture.mipMapBias = -0.5f;
-
-        Color[] colors = new Color[MinimapTexture.width * MinimapTexture.height];
-
-        for (int i = 0; i < mapData.GetLength(0); ++i)
-        {
-            for (int j = 0; j < mapData.GetLength(1); ++j)
-                colors[i * mapData.GetLength(0) + j] = IsPassableOnCoord(i, j) ? Color.white : Color.black;
-        }
-
-        MinimapTexture.SetPixels(colors);
-        MinimapTexture.Apply();
     }
 
     public void SetFloorAndCeiling()
@@ -158,14 +108,14 @@ public class Map:MonoBehaviourSingleton<Map>
     private void PlaceLevelPrefabs()
     {
         string s = "";
-        for (int row = 0; row < mapData.GetLength(0); ++row)
+        for (int row = 0; row < MapData.GetLength(0); ++row)
         {
-            for (int col = 0; col < mapData.GetLength(1); ++col)
+            for (int col = 0; col < MapData.GetLength(1); ++col)
             {
-                s += (int)mapData[row, col];
+                s += (int)MapData[row, col];
                 Vector3 spawnPos = new Vector3(col, 0.5f, -row);
 
-                switch (mapData[row, col])
+                switch (MapData[row, col])
                 {
                     case TileType.WALL1:
                         PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1);
@@ -280,11 +230,11 @@ public class Map:MonoBehaviourSingleton<Map>
             Instantiate(prefab, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
     }
 
-    private bool IsValidCoord(int row, int col)
+    public bool IsValidCoord(int row, int col)
     {
         try
         {
-            var a = mapData[row, col];
+            var a = MapData[row, col];
             return true;
         }
         catch (IndexOutOfRangeException)
@@ -295,17 +245,17 @@ public class Map:MonoBehaviourSingleton<Map>
 
     private bool IsUnpassableOnCoord(int row, int col)
     {
-        return mapData[row, col] <= TileType.UNPASSABLE;
+        return MapData[row, col] <= TileType.UNPASSABLE;
     }
 
     private bool IsSemiPassableOnCoord(int row, int col)
     {
-        return TileType.UNPASSABLE < mapData[row, col] && mapData[row, col] <= TileType.SEMIPASSABLE;
+        return TileType.UNPASSABLE < MapData[row, col] && MapData[row, col] <= TileType.SEMIPASSABLE;
     }
 
-    private bool IsPassableOnCoord(int row, int col)
+    public bool IsPassableOnCoord(int row, int col)
     {
-         return TileType.UNPASSABLE < mapData[row, col] && mapData[row, col] <= TileType.PASSABLE;
+         return TileType.UNPASSABLE < MapData[row, col] && MapData[row, col] <= TileType.PASSABLE;
     }
 
     private void DeleteCurrentLevel()
@@ -317,7 +267,7 @@ public class Map:MonoBehaviourSingleton<Map>
     private void ReadMapData(int level)
     {
         Texture2D image = (Texture2D)Resources.Load(level.ToString());
-        mapData = new TileType[image.width, image.height];
+        MapData = new TileType[image.width, image.height];
 
         for (int x = 0; x < image.width; ++x)
         {
@@ -327,35 +277,35 @@ public class Map:MonoBehaviourSingleton<Map>
                 int j = x;
                 Color c = image.GetPixel(x, y);
                 if (c == Wall1Color)
-                    mapData[i, j] = TileType.WALL1;
+                    MapData[i, j] = TileType.WALL1;
                 else if (c == Wall2Color)
-                    mapData[i, j] = TileType.WALL2;
+                    MapData[i, j] = TileType.WALL2;
                 else if (c == WoodColumnColor)
-                    mapData[i, j] = TileType.WOOD_COLUMN;
+                    MapData[i, j] = TileType.WOOD_COLUMN;
                 else if (c == StoneColumnColor)
-                    mapData[i, j] = TileType.STONE_COLUMN;
+                    MapData[i, j] = TileType.STONE_COLUMN;
                 else if (c == DoorColor)
-                    mapData[i, j] = TileType.DOOR;
+                    MapData[i, j] = TileType.DOOR;
                 else if (c == TunnelColor)
-                    mapData[i, j] = TileType.TUNNEL;
+                    MapData[i, j] = TileType.TUNNEL;
                 else if (c == LampColor)
-                    mapData[i, j] = TileType.LAMP;
+                    MapData[i, j] = TileType.LAMP;
                 else if (c == SpawnPositionColor)
-                    mapData[i, j] = TileType.SPAWN;
+                    MapData[i, j] = TileType.SPAWN;
                 else if (c == FoodColor)
-                    mapData[i, j] = TileType.FOOD;
+                    MapData[i, j] = TileType.FOOD;
                 else if (c == AmmoColor)
-                    mapData[i, j] = TileType.AMMO;
+                    MapData[i, j] = TileType.AMMO;
                 else if (c == KeyColor)
-                    mapData[i, j] = TileType.KEY;
+                    MapData[i, j] = TileType.KEY;
                 else if (c == NoteColor)
-                    mapData[i, j] = TileType.NOTE;
+                    MapData[i, j] = TileType.NOTE;
                 else if (c == TreasureColor)
-                    mapData[i, j] = TileType.TREASURE;
+                    MapData[i, j] = TileType.TREASURE;
                 else if (c == MachineGunColor)
-                    mapData[i, j] = TileType.MACHINE_GUN;
+                    MapData[i, j] = TileType.MACHINE_GUN;
                 else if (c == ChainGunColor)
-                    mapData[i, j] = TileType.CHAIN_GUN;
+                    MapData[i, j] = TileType.CHAIN_GUN;
                 else
                     throw new Exception("This color is not specified yet: " + c);
             }

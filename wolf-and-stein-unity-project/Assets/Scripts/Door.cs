@@ -15,6 +15,8 @@ public class Door : MonoBehaviour
 	bool shouldAutoCloseDoor = false;
 	float timeTillDoorClose = 0;
 
+	public static bool DoorOpened;
+
 	void Start()
 	{
 		animator = GetComponent<Animator>();
@@ -182,6 +184,7 @@ public class Door : MonoBehaviour
 			animator.SetFloat("Direction", 0);
 			timeTillDoorClose = GamePreferences.Instance.DoorAutoCloseTime;
 			shouldAutoCloseDoor = true;
+			DoorOpened = true;
 		}
 
 		pathBlockCollider.isTrigger = openingDoor ? true : false;
