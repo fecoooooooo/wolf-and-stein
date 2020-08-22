@@ -26,6 +26,30 @@ public class Character : MonoBehaviourSingleton<Character>
     float moveVector = 0;
     float turnVector = 0;
 
+    public HPState HPState
+	{
+		get
+		{
+            if (90 <= HP)
+                return HPState.Healty;
+            else if (75 <= HP && HP <= 89)
+                return HPState.Hurt1;
+            else if (60 <= HP && HP <= 74)
+                return HPState.Hurt2;
+            else if (45 <= HP && HP <= 59)
+                return HPState.Hurt3;
+            else if (30 <= HP && HP <= 44)
+                return HPState.Hurt4;
+            else if (15 <= HP && HP <= 29)
+                return HPState.Hurt5;
+            else if (1 <= HP && HP <= 14)
+                return HPState.Hurt6;
+            else
+                return HPState.Dead;
+        }
+	}
+
+
     public WeaponType CurrentWeapon { get; private set; } = WeaponType.Pistol;
     public float Damage 
     {
@@ -33,11 +57,13 @@ public class Character : MonoBehaviourSingleton<Character>
     }
     readonly float[] WEAPON_DAMAGES = { 5f, 10f, 12f, 15f };
 	public EventHandler ShouldUpdateUI;
+	public EventHandler HPChanged;
     public EventHandler WeaponChanged;
     public EventHandler ShootWeapon;
 
     private void Start()
     {
+        HP = MAX_HP;
         rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -46,6 +72,8 @@ public class Character : MonoBehaviourSingleton<Character>
         moveVector = Input.GetAxisRaw("Vertical");
         turnVector = Input.GetAxisRaw("Horizontal");
 
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            TakeDamage(7);
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             EquipWeapon(WeaponType.Paw);
@@ -110,6 +138,15 @@ public class Character : MonoBehaviourSingleton<Character>
         WeaponChanged?.Invoke(this, null);
 	}
 
+    public void TakeDamage(int damage)
+	{
+        HP -= damage;
+        HP = HP < 0 ? 0 : HP;
+
+        HPChanged?.Invoke(this, null);
+        ShouldUpdateUI?.Invoke(this, null);
+    }
+
 	internal void SetValues(int score, int lives, int hP, int ammo, int keys, int notes, bool hasMachinGun, bool hasChainGun)
 	{
         this.Score = score;
@@ -123,6 +160,7 @@ public class Character : MonoBehaviourSingleton<Character>
 
         ShouldUpdateUI?.Invoke(this, null);
         WeaponChanged?.Invoke(this, null);
+        HPChanged?.Invoke(this, null);
     }
 
 	private void FixedUpdate()
@@ -196,4 +234,16 @@ public enum WeaponType
     Pistol,
     MachineGun,
     ChainGun
+}
+
+public enum HPState
+{
+    Healty,
+    Hurt1,
+    Hurt2,
+    Hurt3,
+    Hurt4,
+    Hurt5,
+    Hurt6,
+    Dead
 }
