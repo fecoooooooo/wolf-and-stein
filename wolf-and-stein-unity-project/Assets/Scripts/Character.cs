@@ -17,6 +17,7 @@ public class Character : MonoBehaviourSingleton<Character>
     public int Notes { get; private set; }
     public bool HasMachinGun { get; private set; }
     public bool HasChainGun { get; private set; }
+    public bool Shooting { get; private set; }
 
     new Rigidbody rigidbody;
 
@@ -48,14 +49,19 @@ public class Character : MonoBehaviourSingleton<Character>
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             EquipWeapon(WeaponType.Paw);
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && Ammo > 0)
             EquipWeapon(WeaponType.Pistol);
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && Ammo > 0/*&& HasMachinGun*/)
             EquipWeapon(WeaponType.MachineGun);
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && Ammo > 0/*&& HasChainGun*/)
             EquipWeapon(WeaponType.ChainGun);
         else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Shooting = true;
             Shoot();
+        }
+        else if (Input.GetKeyUp(KeyCode.Space))
+            Shooting = false;
     }
 
 	private void Shoot()
@@ -91,7 +97,6 @@ public class Character : MonoBehaviourSingleton<Character>
                     break;
 				}
 			}
-
 
             if(enemyHit)
                 en.TakeDamage(Damage);
