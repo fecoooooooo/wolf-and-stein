@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float MaxHP = 100f;
+    public float OffsetForShooting = .3f;
 
     public float MoveSpeed = .01f;
     public float MinDistanceToOtherColliders = .5f;
@@ -13,20 +14,25 @@ public class Enemy : MonoBehaviour
 
     float currentHp;
     bool chasing = false;
-    
+
     const float TARGET_REACHED_DISTANCE = .01f;
     bool hasTarget = false;
     Vector3 currentTarget;
     Vector3? directionAfterReachedTarget;
-    
+
     public float idleTimeLeft = 0;
 
     Transform targetDebug;
+    Transform visuals;
+    BoxCollider myCollider;
 
 
     void Start()
     {
         currentHp = MaxHP;
+
+        visuals = transform.Find("Visuals");
+        myCollider = GetComponent<BoxCollider>();
 
         targetDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
         targetDebug.localScale = new Vector3(.2f, .2f, .2f);
@@ -35,7 +41,7 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (idleTimeLeft > 0) 
+        if (idleTimeLeft > 0)
         {
             idleTimeLeft -= Time.deltaTime;
             return;
@@ -43,53 +49,62 @@ public class Enemy : MonoBehaviour
 
         TryToIdle();
         Move();
-        
+
     }
 
-	private void TryToIdle()
-	{
+    private void TryToIdle()
+    {
         if (!hasTarget && Random.Range(0f, 1f) < IdleChance)
             idleTimeLeft = IdleTime;
-	}
+    }
 
-	private void Move()
-	{
+    private void Move()
+    {
         RaycastHit hitInfo;
-        if(!hasTarget && !chasing && Physics.Raycast(new Ray(transform.position, transform.forward), out hitInfo, MinDistanceToOtherColliders))
+        if (!hasTarget && !chasing && Physics.Raycast(new Ray(transform.position, transform.forward), out hitInfo, MinDistanceToOtherColliders))
         {
             Door door = hitInfo.transform.GetComponent<Door>();
-            
-            if(door != null)
-			{
+
+            if (door != null)
+            {
                 door.Open();
                 hasTarget = true;
-                currentTarget =  door.GetFartherPoint(transform.position);
+                currentTarget = door.GetFartherPoint(transform.position);
                 directionAfterReachedTarget = door.GetRotationAfterPass(transform.position);
             }
-			else
-			{
+            else
+            {
                 int direction = Random.Range(0, 4);
                 transform.rotation = Quaternion.Euler(0, direction * 90, 0);
-			}
-		}
+            }
+        }
 
-        if(hasTarget)
-		{
+        if (hasTarget)
+        {
             transform.LookAt(currentTarget);
             if (Vector3.Distance(transform.position, currentTarget) < TARGET_REACHED_DISTANCE)
-			{
+            {
                 if (directionAfterReachedTarget.HasValue)
                     transform.rotation = Quaternion.Euler(directionAfterReachedTarget.Value);
 
                 hasTarget = false;
                 directionAfterReachedTarget = null;
             }
-		}
+        }
 
         targetDebug.position = hasTarget ? currentTarget : new Vector3(0, -100, 0);
 
         transform.position += transform.forward * MoveSpeed;
-	}
+    }
+
+    internal Vector3[] GetTargetPositions()
+	{
+        Vector3 offset = visuals.right * OffsetForShooting;
+
+        Vector3[] targetPositions = { visuals.position - offset, visuals.position, visuals.position + offset };
+
+        return targetPositions;
+    }
 
 	internal void TakeDamage(float damage)
 	{

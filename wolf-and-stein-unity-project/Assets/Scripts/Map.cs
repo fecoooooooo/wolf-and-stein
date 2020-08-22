@@ -49,22 +49,13 @@ public class Map:MonoBehaviourSingleton<Map>
         if (Application.isPlaying)
         {
             LoadLevel(1);
-            Character.instance.ShootWeapon += OnShootWeapon;
         }
     }
 
-    void OnShootWeapon(object sender, EventArgs e)
+    public List<Enemy> GetEnemies()
 	{
         enemies.RemoveAll(en => en == null);
-
-        foreach(Enemy en in enemies)
-		{
-            int layerMask = 1 << LayerMask.NameToLayer("Blockers");
-            if(false == Physics.Linecast(Character.instance.transform.position, en.transform.position, layerMask, QueryTriggerInteraction.Ignore))
-			{
-                en.TakeDamage(10);
-			}
-		}
+        return enemies;
 	}
 
 	private void Update()

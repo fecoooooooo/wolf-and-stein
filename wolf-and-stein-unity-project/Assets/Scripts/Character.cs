@@ -6,6 +6,8 @@ using UnityEngine;
 public class Character : MonoBehaviourSingleton<Character>
 {
     public const int MAX_HP = 100;
+    public const int MAX_AMMO = 99;
+    public const float MAX_SHOOT_ANGLE = 30;
 
 	public int Score { get; private set; }
     public int Lives { get; private set; }
@@ -24,8 +26,12 @@ public class Character : MonoBehaviourSingleton<Character>
     float turnVector = 0;
 
     public WeaponType CurrentWeapon { get; private set; } = WeaponType.Pistol;
-    
-    public EventHandler ShouldUpdateUI;
+    public float Damage 
+    {
+        get => WEAPON_DAMAGES[(int)CurrentWeapon];
+    }
+    readonly float[] WEAPON_DAMAGES = { 5f, 10f, 12f, 15f };
+	public EventHandler ShouldUpdateUI;
     public EventHandler WeaponChanged;
     public EventHandler ShootWeapon;
 
@@ -54,9 +60,43 @@ public class Character : MonoBehaviourSingleton<Character>
 
 	private void Shoot()
 	{
+        DamageEnemies();
 
         ShootWeapon?.Invoke(this, null);
 	}
+
+	private void DamageEnemies()
+	{
+        foreach (Enemy en in Map.instance.GetEnemies())
+        {
+            Vector3 charToEnemy = (en.transform.position - transform.position).normalized;
+            var currentAngle = Vector3.Angle(transform.forward, charToEnemy);
+
+            if (MAX_SHOOT_ANGLE < currentAngle)
+                continue;
+
+            int layerMask = 1 << LayerMask.NameToLayer("Blockers");
+
+
+            bool enemyHit = false;
+            foreach(Vector3 targetPos in en.GetTargetPositions())
+			{
+                /*var a = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                a.transform.position = targetPos;
+                a.transform.localScale = new Vector3(.01f, .01f, .01f);*/
+
+                if (false == Physics.Linecast(transform.position, targetPos, layerMask, QueryTriggerInteraction.Ignore))
+				{
+                    enemyHit = true;
+                    break;
+				}
+			}
+
+
+            if(enemyHit)
+                en.TakeDamage(Damage);
+        }
+    }
 
 	private void EquipWeapon(WeaponType weapon)
 	{
@@ -86,33 +126,35 @@ public class Character : MonoBehaviourSingleton<Character>
         rigidbody.angularVelocity = transform.up * turnVector * TurnSpeed;
     }
 
-    public void AddKey(int amountToadd)
+    public void AddKey(int amountToAdd)
     {
-        Keys += amountToadd;
+        Keys += amountToAdd;
         ShouldUpdateUI?.Invoke(this, null);
     }
 
-    internal void AddNote(int amountToadd)
+    internal void AddNote(int amountToAdd)
     {
-        Notes += amountToadd;
+        Notes += amountToAdd;
         ShouldUpdateUI?.Invoke(this, null);
     }
 
-    internal void AddAmmo(int amountToadd)
+    internal void AddAmmo(int amountToAdd)
     {
-        Ammo += amountToadd;
+        Ammo += amountToAdd;
+        Ammo = Ammo > MAX_AMMO ? MAX_AMMO : Ammo;
         ShouldUpdateUI?.Invoke(this, null);
     }  
     
-    internal void AddScore(int amountToadd)
+    internal void AddScore(int amountToAdd)
     {
-        Score += amountToadd;
+        Score += amountToAdd;
         ShouldUpdateUI?.Invoke(this, null);
     }  
     
-    internal void AddHP(int amountToadd)
+    internal void AddHP(int amountToAdd)
     {
-        HP += amountToadd;
+        HP += amountToAdd;
+        HP = HP > MAX_HP ? MAX_HP : HP;
         ShouldUpdateUI?.Invoke(this, null);
     }
 

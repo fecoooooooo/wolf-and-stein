@@ -4299,6 +4299,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1702155573}
     m_Modifications:
+    - target: {fileID: 5440910947513305464, guid: 86f373224f8926b4e9faca1c750308a0,
+        type: 3}
+      propertyPath: OffsetForShooting
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7790637854563171824, guid: 86f373224f8926b4e9faca1c750308a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9300,6 +9305,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1702155573}
     m_Modifications:
+    - target: {fileID: 5440910947513305464, guid: 86f373224f8926b4e9faca1c750308a0,
+        type: 3}
+      propertyPath: OffsetForShooting
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7790637854563171824, guid: 86f373224f8926b4e9faca1c750308a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -24531,6 +24541,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1702155573}
     m_Modifications:
+    - target: {fileID: 5440910947513305464, guid: 86f373224f8926b4e9faca1c750308a0,
+        type: 3}
+      propertyPath: OffsetForShooting
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7790637854563171824, guid: 86f373224f8926b4e9faca1c750308a0,
         type: 3}
       propertyPath: m_LocalPosition.x

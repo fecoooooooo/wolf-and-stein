@@ -11,4 +11,8 @@ public class Ammo : Pickable
         Character.instance.AddAmmo(ammoToAdd);
     }
 
+    public override bool ExtraCondition()
+    {
+        return base.ExtraCondition() && Character.instance.Ammo < Character.MAX_AMMO;
+    }
 }
