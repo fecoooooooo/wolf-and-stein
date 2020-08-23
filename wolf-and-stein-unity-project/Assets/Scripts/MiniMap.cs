@@ -15,15 +15,20 @@ public class MiniMap : MonoBehaviour
     Vector2Int playerCoords;
     Vector2Int prevPlayerCoords;
     Color previousColorOnPlayerCoord;
-
-    Map map;
-
+    
     bool[,] revealedMap;
 
-	private void Start()
-	{
-        map = GetComponent<Map>();
-	}
+    Map _map;
+    Map map 
+    {
+		get
+		{
+            if (null == _map)
+                _map = GetComponent<Map>();
+            return _map;
+		}
+    }
+
 
 	void Update()
     {

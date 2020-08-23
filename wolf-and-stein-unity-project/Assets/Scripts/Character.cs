@@ -109,7 +109,7 @@ public class Character : MonoBehaviourSingleton<Character>
             if (MAX_SHOOT_ANGLE < currentAngle)
                 continue;
 
-            int layerMask = 1 << LayerMask.NameToLayer("Blockers");
+            int layerMask = 1 << LayerMask.NameToLayer("Blockers") | 1 << LayerMask.NameToLayer("Wall");
 
 
             bool enemyHit = false;

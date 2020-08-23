@@ -70,7 +70,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: eb7a677f7055a5f4c98db5dee7d6f896, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 739e28a67f8c337418863c877a25f947, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHP: 100
+  OffsetForShooting: 0.3
   MoveSpeed: 0.01
   MinDistanceToOtherColliders: 0.5
   IdleTime: 5
