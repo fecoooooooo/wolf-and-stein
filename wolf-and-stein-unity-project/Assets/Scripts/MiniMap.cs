@@ -13,8 +13,8 @@ public class MiniMap : MonoBehaviour
     public EventHandler MinimapUpdated;
 
     Vector2Int playerCoords;
-    Vector2Int prevPlayerCoords;
-    Color previousColorOnPlayerCoord;
+    Vector2Int? prevPlayerCoords;
+    Color previousColorOnPlayerCoord = new Color(1f, 1f, 1f, .5f);
     
     bool[,] revealedMap;
 
@@ -28,7 +28,6 @@ public class MiniMap : MonoBehaviour
             return _map;
 		}
     }
-
 
 	void Update()
     {
@@ -58,8 +57,11 @@ public class MiniMap : MonoBehaviour
 
     private void DrawPlayerPosition()
     {
-        DynamicMinimapTexture.SetPixel(prevPlayerCoords.x, prevPlayerCoords.y, previousColorOnPlayerCoord);
-        previousColorOnPlayerCoord = DynamicMinimapTexture.GetPixel(playerCoords.x, playerCoords.y);
+        if (prevPlayerCoords.HasValue)
+        {
+            DynamicMinimapTexture.SetPixel(prevPlayerCoords.Value.x, prevPlayerCoords.Value.y, previousColorOnPlayerCoord);
+            previousColorOnPlayerCoord = DynamicMinimapTexture.GetPixel(playerCoords.x, playerCoords.y);
+        }
 
         DynamicMinimapTexture.SetPixel(playerCoords.x, playerCoords.y, Color.red);
     }
