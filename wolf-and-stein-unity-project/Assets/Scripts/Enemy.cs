@@ -25,6 +25,12 @@ public class Enemy : MonoBehaviour
     Transform targetDebug;
     Transform visuals;
     BoxCollider myCollider;
+    
+    bool isDead;
+
+    Animator animator;
+
+    const float TIME_TILL_DESTROY = 5f;
 
 
     void Start()
@@ -33,6 +39,7 @@ public class Enemy : MonoBehaviour
 
         visuals = transform.Find("Visuals");
         myCollider = GetComponent<BoxCollider>();
+        animator = GetComponentInChildren<Animator>();
 
         targetDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
         targetDebug.localScale = new Vector3(.2f, .2f, .2f);
@@ -41,6 +48,9 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isDead)
+            return;
+
         if (idleTimeLeft > 0)
         {
             idleTimeLeft -= Time.deltaTime;
@@ -108,16 +118,32 @@ public class Enemy : MonoBehaviour
 
 	internal void TakeDamage(float damage)
 	{
+        if (isDead)
+            return;
+
         currentHp -= damage;
 
         Debug.Log($"{name} hp: {currentHp}");
 
         if (currentHp <= 0)
             Die();
+        else
+            animator.SetTrigger("TakeDamage");
     }
 
-	private void Die()
+    private void SpawnLoot()
+    {
+        Debug.Log("Spawn loot");
+    }
+
+    private void Die()
 	{
-        Destroy(gameObject);
+        isDead = true;
+        animator.SetTrigger("Die");
+        myCollider.enabled = false;
+        SpawnLoot();
+        Destroy(gameObject, TIME_TILL_DESTROY);
 	}
+
+	
 }

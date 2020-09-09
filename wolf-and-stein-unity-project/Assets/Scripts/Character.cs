@@ -55,7 +55,9 @@ public class Character : MonoBehaviourSingleton<Character>
     {
         get => WEAPON_DAMAGES[(int)CurrentWeapon];
     }
-    readonly float[] WEAPON_DAMAGES = { 5f, 10f, 12f, 15f };
+	public bool HasAutomaticWeapon { get => CurrentWeapon == WeaponType.MachineGun || CurrentWeapon == WeaponType.ChainGun; }
+
+	readonly float[] WEAPON_DAMAGES = { 30f, 70f, 25f, 35f };
 	public EventHandler ShouldUpdateUI;
 	public EventHandler HPChanged;
     public EventHandler WeaponChanged;
@@ -65,6 +67,7 @@ public class Character : MonoBehaviourSingleton<Character>
     {
         HP = MAX_HP;
         rigidbody = GetComponent<Rigidbody>();
+        WeaponUI.instance.WeaponFired += OnWeaponFired;
     }
 
     void Update()
@@ -94,12 +97,15 @@ public class Character : MonoBehaviourSingleton<Character>
 
 	private void Shoot()
 	{
-        DamageEnemies();
-
         ShootWeapon?.Invoke(this, null);
 	}
 
-	private void DamageEnemies()
+    void OnWeaponFired(object sender, EventArgs e)
+	{
+        DamageEnemies();
+    }
+
+    private void DamageEnemies()
 	{
         foreach (Enemy en in Map.instance.GetEnemies())
         {

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponUI : MonoBehaviour
+public class WeaponUI : MonoBehaviourSingleton<WeaponUI>
 {
     Animator animator;
     float Speed = 0;
 	float currentLoopStart;
+
+	public EventHandler WeaponFired;
 
     void Start()
     {
@@ -27,15 +29,19 @@ public class WeaponUI : MonoBehaviour
 			animator.Play(animator.GetCurrentAnimatorStateInfo(0).shortNameHash, 0, currentLoopStart);
 	}
 
-
     public void OnReachAnimEnd()
 	{
-		if (Character.instance.Shooting)
+		if (Character.instance.Shooting && Character.instance.HasAutomaticWeapon)
 			return;
 
         Speed = 0;
         animator.SetFloat("Speed", Speed);
     }
+
+	public void OnReachDamageFrame()
+	{
+		WeaponFired?.Invoke(this, null);
+	}
 
 
     private void OnWeaponChanged(object sender, EventArgs e)
