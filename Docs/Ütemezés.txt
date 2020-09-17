@@ -14,7 +14,7 @@ enemy:
 	náci szalag rajta
 
 díszítés:
-	"Nicht Vershlag!" zsidoellens plakat
+	"Nicht Vershlag!" farkasellenes plakat
 	"ÜberStein", náci plakát
 	kifeszitett farkasbőr
 	hitlerbajszos kő plakat
