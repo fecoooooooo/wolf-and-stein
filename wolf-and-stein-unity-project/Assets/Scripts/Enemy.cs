@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -26,12 +27,11 @@ public class Enemy : MonoBehaviour
     Transform visuals;
     BoxCollider myCollider;
     
-    bool isDead;
-
     Animator animator;
 
-    const float TIME_TILL_DESTROY = 5f;
+    EnemyState state;
 
+    float timeToLeaveIdle;
 
     void Start()
     {
@@ -39,7 +39,9 @@ public class Enemy : MonoBehaviour
 
         visuals = transform.Find("Visuals");
         myCollider = GetComponent<BoxCollider>();
+
         animator = GetComponentInChildren<Animator>();
+        timeToLeaveIdle = animator.runtimeAnimatorController.animationClips.FirstOrDefault(a => a.name == "EnemyIdleLeave").length * 2;
 
         targetDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
         targetDebug.localScale = new Vector3(.2f, .2f, .2f);
@@ -48,28 +50,42 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isDead)
+        if (state == EnemyState.Dead)
             return;
 
-        if (idleTimeLeft > 0)
-        {
-            idleTimeLeft -= Time.deltaTime;
-            return;
-        }
+        HandleIdle();
 
-        TryToIdle();
+        if (state == EnemyState.Idle)
+            return;
+
         Move();
-
     }
 
-    private void TryToIdle()
+    private void HandleIdle()
     {
-        if (!hasTarget && Random.Range(0f, 1f) < IdleChance)
+        if (state != EnemyState.Idle &&!hasTarget && Random.Range(0f, 1f) < IdleChance)
+		{
+            state = EnemyState.Idle;
             idleTimeLeft = IdleTime;
+            animator.SetTrigger("IdleEnter");
+        }
+        else if (state == EnemyState.Idle)
+        {
+            idleTimeLeft -= Time.deltaTime;
+            if (state != EnemyState.IdleLeave && idleTimeLeft <= timeToLeaveIdle)
+            {
+                state = EnemyState.IdleLeave;
+                animator.SetTrigger("IdleLeave");
+            }
+            if (idleTimeLeft <= 0)
+                state = EnemyState.Walk;
+        }
     }
 
     private void Move()
     {
+        SetRequiredWalkAnimation();
+
         RaycastHit hitInfo;
         if (!hasTarget && !chasing && Physics.Raycast(new Ray(transform.position, transform.forward), out hitInfo, MinDistanceToOtherColliders))
         {
@@ -107,7 +123,47 @@ public class Enemy : MonoBehaviour
         transform.position += transform.forward * MoveSpeed;
     }
 
-    internal Vector3[] GetTargetPositions()
+	private void SetRequiredWalkAnimation()
+	{
+        EnemyState requiredState = CalculateRequiredStateViaWalking();
+        if (state != requiredState)
+        {
+            animator.ResetTrigger("IdleLeave");
+			switch (requiredState)
+			{
+				case EnemyState.Walk:
+                    animator.SetTrigger("Walk");
+					break;
+				case EnemyState.WalkBack:
+                    animator.SetTrigger("WalkBack");
+                    break;
+				case EnemyState.WalkLeft:
+                    animator.SetTrigger("WalkLeft");
+                    break;
+				case EnemyState.WalkRight:
+                    animator.SetTrigger("WalkRight");
+                    break;
+			}
+            state = requiredState;
+        }
+    }
+
+	private EnemyState CalculateRequiredStateViaWalking()
+	{
+        Vector3 characterToEnemy = (transform.position - Character.instance.transform.position).normalized;
+        float angle = Vector3.SignedAngle(characterToEnemy, transform.forward, Vector3.up);
+        //Debug.Log(angle);
+        if (-45 <= angle && angle < 45)
+            return EnemyState.WalkBack;
+        else if (45 <= angle && angle < 135)
+            return EnemyState.WalkRight;
+        else if (-135 <= angle && angle < -45)
+            return EnemyState.WalkLeft;
+        else
+            return EnemyState.Walk;
+    }
+
+	internal Vector3[] GetTargetPositions()
 	{
         Vector3 offset = visuals.right * OffsetForShooting;
 
@@ -118,7 +174,7 @@ public class Enemy : MonoBehaviour
 
 	internal void TakeDamage(float damage)
 	{
-        if (isDead)
+        if (state == EnemyState.Dead)
             return;
 
         currentHp -= damage;
@@ -138,12 +194,21 @@ public class Enemy : MonoBehaviour
 
     private void Die()
 	{
-        isDead = true;
+        state = EnemyState.Dead;
         animator.SetTrigger("Die");
         myCollider.enabled = false;
         SpawnLoot();
-        Destroy(gameObject, TIME_TILL_DESTROY);
 	}
 
-	
+	enum EnemyState
+	{
+        Idle,
+        IdleLeave,
+        Dead,
+        Attack,
+        Walk,
+        WalkBack,
+        WalkLeft,
+        WalkRight,
+	}
 }
