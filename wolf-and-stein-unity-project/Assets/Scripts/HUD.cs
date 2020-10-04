@@ -45,7 +45,6 @@ public class HUD : MonoBehaviour
 
         Character.instance.ShouldUpdateUI += OnUpdateUI;
         Character.instance.WeaponChanged += OnWeaponChanged;
-        Map.instance.MiniMap.MinimapUpdated += OnMiniMapUpdated;
     }
 
     private void OnUpdateUI(object sender, EventArgs e)
@@ -78,10 +77,5 @@ public class HUD : MonoBehaviour
             default:
                 throw new Exception("No Such weapontype exists");
         }
-    }
-
-    void OnMiniMapUpdated(object sender, EventArgs e)
-	{
-        minimapImg.texture = Map.instance.MiniMap.DynamicMinimapTexture;
     }
 }

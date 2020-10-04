@@ -2,15 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class MiniMap : MonoBehaviour
+public class MiniMap : MonoBehaviourSingleton<MiniMap>
 {
     const int VISION_DISTANCE = 6;
     readonly Color UnrevealedColor = new Color(.5f, .5f, .5f, 0.5f);
 
     public Texture2D DynamicMinimapTexture { get; private set; }
     public Texture2D StaticMinimapTexture { get; private set; }
-    public EventHandler MinimapUpdated;
+
+    RawImage minimapUIImage;
 
     Vector2Int playerCoords;
     Vector2Int? prevPlayerCoords;
@@ -18,21 +20,20 @@ public class MiniMap : MonoBehaviour
     
     bool[,] revealedMap;
 
-    Map _map;
-    Map map 
-    {
-		get
-		{
-            if (null == _map)
-                _map = GetComponent<Map>();
-            return _map;
-		}
-    }
+    Map map;
+
+	private void Start()
+	{
+        map = Map.instance;
+        minimapUIImage = GetComponent<RawImage>();
+	}
 
 	void Update()
     {
         if (!Application.isPlaying)
             return;
+
+        HandleInput();
 
         playerCoords = GetPlayerCoords();
 
@@ -45,6 +46,17 @@ public class MiniMap : MonoBehaviour
         prevPlayerCoords = playerCoords;
     }
 
+	private void HandleInput()
+	{
+        if (Input.GetKeyDown(KeyCode.M))
+            ToggleVisibility();
+    }
+
+    public void ToggleVisibility()
+	{
+        minimapUIImage.enabled = !minimapUIImage.enabled;
+    }
+
     private void UpdateMiniMap()
     {
         RevealSurroundings();
@@ -52,7 +64,12 @@ public class MiniMap : MonoBehaviour
 
         DynamicMinimapTexture.Apply();
 
-        MinimapUpdated?.Invoke(this, null);
+        MinimapUpdated();
+    }
+
+	private void MinimapUpdated()
+	{
+        minimapUIImage.texture = DynamicMinimapTexture;
     }
 
     private void DrawPlayerPosition()

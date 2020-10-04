@@ -36,14 +36,6 @@ public class Map:MonoBehaviourSingleton<Map>
 
     List<Enemy> enemies = new List<Enemy>();
 
-    public MiniMap MiniMap { get; private set; }
-
-	protected override void OnAwake()
-	{
-        base.OnAwake();
-        MiniMap = GetComponent<MiniMap>();
-	}
-
 	void Start()
     {
         dynamic = transform.Find("Dynamic");
@@ -66,7 +58,7 @@ public class Map:MonoBehaviourSingleton<Map>
 	public void LoadLevel(int level)
 	{
         Generate(level);
-        MiniMap.GenerateMaps();
+        MiniMap.instance.GenerateMaps();
         CollectEnemies();
     }
 
