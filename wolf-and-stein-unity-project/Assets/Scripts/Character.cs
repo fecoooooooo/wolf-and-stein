@@ -9,7 +9,13 @@ public class Character : MonoBehaviourSingleton<Character>
     public const int MAX_AMMO = 99;
     public const float MAX_SHOOT_ANGLE = 30;
 
-	public int Score { get; private set; }
+    float TURN_SPEED = 3f;
+    const float FORWARD_SPEED = 5f;
+    const float SIDE_SPEED = 5f;
+    
+    const float PAW_RANGE = 1.3f;
+
+    public int Score { get; private set; }
     public int Lives { get; private set; }
     public int HP { get; private set; }
     public int Ammo { get; private set; }
@@ -21,10 +27,7 @@ public class Character : MonoBehaviourSingleton<Character>
 
     new Rigidbody rigidbody;
 
-    float TurnSpeed = 3f;
-    const float ForwardSpeed = 5f;
-    const float SideSpeed = 5f;
-
+    
     float forwardImput = 0;
     float turnInput = 0;
     float sideInput = 0;
@@ -134,6 +137,9 @@ public class Character : MonoBehaviourSingleton<Character>
                 a.transform.position = targetPos;
                 a.transform.localScale = new Vector3(.01f, .01f, .01f);*/
 
+                if (CurrentWeapon == WeaponType.Paw && PAW_RANGE < Vector3.Distance(transform.position, targetPos))
+                    continue;
+
                 if (false == Physics.Linecast(transform.position, targetPos, layerMask, QueryTriggerInteraction.Ignore))
 				{
                     enemyHit = true;
@@ -180,12 +186,12 @@ public class Character : MonoBehaviourSingleton<Character>
 
 	private void FixedUpdate()
     {
-        Vector3 forwardAmount = transform.forward * forwardImput * ForwardSpeed;
-        Vector3 sideAmount = transform.right * sideInput * SideSpeed;
+        Vector3 forwardAmount = transform.forward * forwardImput * FORWARD_SPEED;
+        Vector3 sideAmount = transform.right * sideInput * SIDE_SPEED;
 
         rigidbody.velocity = forwardAmount + sideAmount;
 
-        rigidbody.angularVelocity = transform.up * turnInput * TurnSpeed;
+        rigidbody.angularVelocity = transform.up * turnInput * TURN_SPEED;
     }
 
     public void AddKey(int amountToAdd)
