@@ -42,9 +42,7 @@ public class Map:MonoBehaviourSingleton<Map>
         SetFloorAndCeiling();
 
         if (Application.isPlaying)
-        {
             LoadLevel(1);
-        }
     }
 
     public List<Enemy> GetEnemies()
@@ -52,8 +50,6 @@ public class Map:MonoBehaviourSingleton<Map>
         enemies.RemoveAll(en => en == null);
         return enemies;
 	}
-
-
 
 	public void LoadLevel(int level)
 	{
