@@ -13,6 +13,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
     public static readonly Color Wall1Color = Color.black;
     public static readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
+    public static readonly Color Poster1Color = new Color(0.64705882352f, 1f, 0.54117647058f, 1.000f);
+    public static readonly Color Poster2Color = new Color(0.2f, 0.31764705882f, 0.16078431372f, 1.000f);
     public static readonly Color WoodColumnColor = new Color32(166, 109, 109, 255);
     public static readonly Color StoneColumnColor = new Color32(94, 0, 0, 255);
     public static readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
@@ -122,6 +124,12 @@ public class Map:MonoBehaviourSingleton<Map>
                         break;
                     case TileType.WALL2:
                         PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2);
+                        break;
+                    case TileType.POSTER1:
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster1);
+                        break;
+                    case TileType.POSTER2:
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster2);
                         break;
                     case TileType.WOOD_COLUMN:
                         PlaceSimple(spawnPos, GamePreferences.Instance.WoodColumn);
@@ -280,6 +288,10 @@ public class Map:MonoBehaviourSingleton<Map>
                     MapData[i, j] = TileType.WALL1;
                 else if (c == Wall2Color)
                     MapData[i, j] = TileType.WALL2;
+                else if (c == Poster1Color)
+                    MapData[i, j] = TileType.POSTER1;
+                else if (c == Poster2Color)
+                    MapData[i, j] = TileType.POSTER2;
                 else if (c == WoodColumnColor)
                     MapData[i, j] = TileType.WOOD_COLUMN;
                 else if (c == StoneColumnColor)
@@ -321,6 +333,8 @@ public class Map:MonoBehaviourSingleton<Map>
     {
         WALL1,
         WALL2,
+        POSTER1,
+        POSTER2,
         WOOD_COLUMN,
         STONE_COLUMN,
         

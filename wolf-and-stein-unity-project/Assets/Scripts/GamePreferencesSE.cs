@@ -9,6 +9,8 @@ public class GamePreferencesSE : ScriptableObject
 
 	public GameObject Wall1;
 	public GameObject Wall2;
+	public GameObject Poster1;
+	public GameObject Poster2;
 	public GameObject WoodColumn;
 	public GameObject StoneColumn;
 	public GameObject Door;
