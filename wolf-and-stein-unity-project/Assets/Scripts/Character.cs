@@ -22,9 +22,12 @@ public class Character : MonoBehaviourSingleton<Character>
     new Rigidbody rigidbody;
 
     float TurnSpeed = 3f;
-    const float MoveSpeed = 5f;
-    float moveVector = 0;
-    float turnVector = 0;
+    const float ForwardSpeed = 5f;
+    const float SideSpeed = 5f;
+
+    float forwardImput = 0;
+    float turnInput = 0;
+    float sideInput = 0;
 
     public HPState HPState
 	{
@@ -72,8 +75,14 @@ public class Character : MonoBehaviourSingleton<Character>
 
     void Update()
     {
-        moveVector = Input.GetAxisRaw("Vertical");
-        turnVector = Input.GetAxisRaw("Horizontal");
+        forwardImput = Input.GetAxisRaw("Vertical");
+        turnInput = Input.GetAxisRaw("Horizontal");
+        
+        sideInput = 0;
+        if (Input.GetKey(KeyCode.Q))
+            sideInput = -1;
+        else if (Input.GetKey(KeyCode.E))
+            sideInput = 1;
 
         if (Input.GetKeyDown(KeyCode.Alpha8))
             TakeDamage(7);
@@ -171,8 +180,12 @@ public class Character : MonoBehaviourSingleton<Character>
 
 	private void FixedUpdate()
     {
-        rigidbody.velocity = transform.forward * moveVector * MoveSpeed;
-        rigidbody.angularVelocity = transform.up * turnVector * TurnSpeed;
+        Vector3 forwardAmount = transform.forward * forwardImput * ForwardSpeed;
+        Vector3 sideAmount = transform.right * sideInput * SideSpeed;
+
+        rigidbody.velocity = forwardAmount + sideAmount;
+
+        rigidbody.angularVelocity = transform.up * turnInput * TurnSpeed;
     }
 
     public void AddKey(int amountToAdd)
