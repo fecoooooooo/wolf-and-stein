@@ -14,7 +14,7 @@ public class MenuButton : MonoBehaviour
 
 	public bool Inactive { get; internal set; }
 
-	void Start()
+	void Awake()
     {
         label = GetComponentInChildren<TextMeshProUGUI>();
     }
