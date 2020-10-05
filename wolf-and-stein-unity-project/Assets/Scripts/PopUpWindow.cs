@@ -14,6 +14,9 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
 
     void Start()
     {
+        Transform rootCanvas = transform.parent;
+        DontDestroyOnLoad(rootCanvas.gameObject);
+
         visuals = transform.Find("Visuals").gameObject;
         messageLbl = transform.Find("Visuals/MessageLbl").GetComponent<TextMeshProUGUI>();
         declineButton = transform.Find("Visuals/DeclineBtn").GetComponent<Button>();
@@ -30,12 +33,12 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
         confirmButton.onClick.RemoveAllListeners();
 
         declineButton.onClick.AddListener(delegate() { 
-            onDecline();
             visuals.SetActive(false);
+            onDecline();
         });
         confirmButton.onClick.AddListener(delegate() { 
-            onConfirm(); 
             visuals.SetActive(false);
+            onConfirm(); 
         });
 
         declineButton.GetComponentInChildren<TextMeshProUGUI>().text = declineText;
