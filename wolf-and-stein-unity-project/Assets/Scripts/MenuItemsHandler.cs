@@ -36,12 +36,28 @@ public class MenuItemsHandler : MonoBehaviour
         }
     }
 
-	void Start()
+    void Start()
     {
         selectorImage = transform.Find("SelectorImg").GetComponent<Image>();
         menuItems = GetComponentsInChildren<MenuButton>();
+
+        for (int i = 0; i < menuItems.Length; ++i)
+        {
+            int buttonIndex = i;
+            menuItems[i].GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() =>
+            {
+                ButtonClickedWithMouse(buttonIndex);
+            }));
+        }
+        
         SelectWithOffset(0);
     }
+
+    void ButtonClickedWithMouse(int index)
+	{
+        selectedIndex = index;
+        UpdateUI();
+	}
 
     void Update()
     {

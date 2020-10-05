@@ -25,24 +25,26 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
         visuals.SetActive(false);
     }
 
-    public void Show(string message, Action onDecline, Action onConfirm, string declineText = "No", string confirmText = "Yes")
+    public void Show(string message, Action onConfirm, Action onDecline, string confirmText = "Yes", string declineText = "No")
 	{
         messageLbl.text = message;
 
-        declineButton.onClick.RemoveAllListeners();
         confirmButton.onClick.RemoveAllListeners();
+        declineButton.onClick.RemoveAllListeners();
 
-        declineButton.onClick.AddListener(delegate() { 
-            visuals.SetActive(false);
-            onDecline();
-        });
+        
         confirmButton.onClick.AddListener(delegate() { 
             visuals.SetActive(false);
             onConfirm(); 
         });
 
-        declineButton.GetComponentInChildren<TextMeshProUGUI>().text = declineText;
+        declineButton.onClick.AddListener(delegate () {
+            visuals.SetActive(false);
+            onDecline();
+        });
+
         confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = confirmText;
+        declineButton.GetComponentInChildren<TextMeshProUGUI>().text = declineText;
 
         visuals.SetActive(true);
 	}

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class SaveGameHandler : MonoBehaviourSingleton<SaveGameHandler>
 {
+    public bool SaveGameExists { get => PlayerPrefs.GetInt("Level", -1) != -1; }
+
 	private void Start()
 	{
-        LoadData();
+        DontDestroyOnLoad(gameObject);
 	}
 
 	public void LoadData()
