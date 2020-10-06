@@ -9,7 +9,6 @@ using UnityEngine.UI;
 [CustomEditor(typeof(LevelDataImage))]
 public class LevelDataImageEditor : Editor
 {
-    Camera sceneCamera;
     bool editing = false;
     Texture2D texture;
     LevelDataImage levelImage;
@@ -23,6 +22,7 @@ public class LevelDataImageEditor : Editor
     Texture2D doorTexture;
     Texture2D lampTexture;
     Texture2D tunnelTexture;
+    Texture2D secretTunnelTexture;
     Texture2D spawnPosTexture;
     Texture2D foodTexture;
     Texture2D ammoTexture;
@@ -46,6 +46,7 @@ public class LevelDataImageEditor : Editor
         SetButtonTexture(ref doorTexture, Map.DoorColor);
         SetButtonTexture(ref lampTexture, Map.LampColor);
         SetButtonTexture(ref tunnelTexture, Map.TunnelColor);
+        SetButtonTexture(ref secretTunnelTexture, Map.SecretTunnelColor);
         SetButtonTexture(ref spawnPosTexture, Map.SpawnPositionColor);
         SetButtonTexture(ref foodTexture, Map.FoodColor);
         SetButtonTexture(ref ammoTexture, Map.AmmoColor);
@@ -110,6 +111,7 @@ public class LevelDataImageEditor : Editor
         AddColoringButton("Door", doorTexture, Map.DoorColor);
         AddColoringButton("Lamp", lampTexture, Map.LampColor);
         AddColoringButton("Tunnel", tunnelTexture, Map.TunnelColor);
+        AddColoringButton("Secret tunnel", secretTunnelTexture, Map.SecretTunnelColor);
         AddColoringButton("Spawn Position", spawnPosTexture, Map.SpawnPositionColor);
         AddColoringButton("Food", foodTexture, Map.FoodColor);
         AddColoringButton("Ammo", ammoTexture, Map.AmmoColor);
@@ -150,10 +152,10 @@ public class LevelDataImageEditor : Editor
         HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
         Event e = Event.current;
 
-        if (e.type == EventType.MouseDown)
+        if (e.type == EventType.MouseDown && e.button == 0)
             mouseDown = true;
 
-        if (e.type == EventType.MouseUp)
+        if (e.type == EventType.MouseUp && e.button == 0)
             mouseDown = false;
 
         if (editing)

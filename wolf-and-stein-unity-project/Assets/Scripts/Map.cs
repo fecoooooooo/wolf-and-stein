@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -20,6 +20,7 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color DoorColor = new Color(0.7254902f, 0.4784314f, 0.3411765f, 1.000f);
     public static readonly Color LampColor = new Color(1f, 0.9490196f, 0f, 1.000f);
     public static readonly Color TunnelColor = Color.white;
+    public static readonly Color SecretTunnelColor = new Color32(255, 145, 0, 255);
     public static readonly Color SpawnPositionColor = Color.magenta;
     public static readonly Color FoodColor = new Color32(55, 255, 0, 255);
     public static readonly Color AmmoColor = new Color32(170, 0, 232, 255);
@@ -186,7 +187,8 @@ public class Map:MonoBehaviourSingleton<Map>
         PlaceSimple(spawnPos, GamePreferences.Instance.Ammo);
 
     }
-	private void PlaceCharacter(Vector3 spawnPos, int row, int col)
+
+    private void PlaceCharacter(Vector3 spawnPos, int row, int col)
 	{
         Transform characterTransform = GameObject.Find("Character").transform;
         characterTransform.position = spawnPos;
@@ -306,7 +308,7 @@ public class Map:MonoBehaviourSingleton<Map>
                     MapData[i, j] = TileType.STONE_COLUMN;
                 else if (c == DoorColor)
                     MapData[i, j] = TileType.DOOR;
-                else if (c == TunnelColor)
+                else if (c == TunnelColor || c == SecretTunnelColor)
                     MapData[i, j] = TileType.TUNNEL;
                 else if (c == LampColor)
                     MapData[i, j] = TileType.LAMP;
@@ -353,6 +355,7 @@ public class Map:MonoBehaviourSingleton<Map>
         SEMIPASSABLE = DOOR,
 
         TUNNEL,
+        SECRET_TUNNEL,
         LAMP,
         
         FOOD,
