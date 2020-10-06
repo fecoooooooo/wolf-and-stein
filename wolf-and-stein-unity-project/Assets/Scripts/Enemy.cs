@@ -187,17 +187,12 @@ public class Enemy : MonoBehaviour
             animator.SetTrigger("TakeDamage");
     }
 
-    private void SpawnLoot()
-    {
-        Debug.Log("Spawn loot");
-    }
-
-    private void Die()
+	private void Die()
 	{
         state = EnemyState.Dead;
         animator.SetTrigger("Die");
         myCollider.enabled = false;
-        SpawnLoot();
+        Map.instance.SpawnLootFromCorpse(transform.position);
 	}
 
 	enum EnemyState

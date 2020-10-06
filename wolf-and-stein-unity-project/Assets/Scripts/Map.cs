@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -166,6 +166,26 @@ public class Map:MonoBehaviourSingleton<Map>
         //Debug.Log(s);
     }
 
+	internal void SpawnLootFromCorpse(Vector3 corpsePos)
+	{
+        int layerMask = 1 << LayerMask.NameToLayer("Blockers") | 1 << LayerMask.NameToLayer("Wall");
+
+		Vector3 spawnPos = corpsePos;
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector3 offsetPos = corpsePos + Quaternion.Euler(0, i * 90, 0) * transform.forward;
+            if (false == Physics.Linecast(corpsePos, offsetPos, layerMask, QueryTriggerInteraction.Ignore))
+			{
+                Vector3 halfOffset = corpsePos + Quaternion.Euler(0, i * 90, 0) * transform.forward / 2;
+                spawnPos = halfOffset;
+                break;
+			}
+        }
+
+        PlaceSimple(spawnPos, GamePreferences.Instance.Ammo);
+
+    }
 	private void PlaceCharacter(Vector3 spawnPos, int row, int col)
 	{
         Transform characterTransform = GameObject.Find("Character").transform;
