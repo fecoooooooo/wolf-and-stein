@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
+public class PopUpWindow : MonoWithInputSingleton<PopUpWindow>
 {
     GameObject visuals;
     TextMeshProUGUI messageLbl;
     Button declineButton;
     Button confirmButton;
 
-    void Start()
+	public bool Showing { get => visuals.activeSelf; }
+
+	void Start()
     {
         Transform rootCanvas = transform.parent;
         DontDestroyOnLoad(rootCanvas.gameObject);
@@ -25,8 +28,10 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
         visuals.SetActive(false);
     }
 
-    public void Show(string message, Action onConfirm, Action onDecline, string confirmText = "Yes", string declineText = "No")
+	public void Show(string message, Action onConfirm, Action onDecline, string confirmText = "Yes", string declineText = "No")
 	{
+        EnableInput();
+
         messageLbl.text = message;
 
         confirmButton.onClick.RemoveAllListeners();
@@ -35,11 +40,13 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
         
         confirmButton.onClick.AddListener(delegate() { 
             visuals.SetActive(false);
+            DisableInput();
             onConfirm(); 
         });
 
         declineButton.onClick.AddListener(delegate () {
             visuals.SetActive(false);
+            DisableInput();
             onDecline();
         });
 
@@ -48,4 +55,12 @@ public class PopUpWindow : MonoBehaviourSingleton<PopUpWindow>
 
         visuals.SetActive(true);
 	}
+
+	public override void HandleInput()
+	{
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            confirmButton.onClick.Invoke();
+        if (Input.GetKeyDown(KeyCode.Escape))
+            declineButton.onClick.Invoke();
+    }
 }

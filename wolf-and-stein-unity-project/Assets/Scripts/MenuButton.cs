@@ -29,4 +29,9 @@ public class MenuButton : MonoBehaviour
 	{
         label.color = SELECTED_COLOR;
 	}
+
+	internal void InvokeClick()
+	{
+		GetComponent<Button>().onClick.Invoke();
+	}
 }

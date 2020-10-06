@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuItemsHandler : MonoBehaviour
+public class MenuItemsHandler : MonoWithInput
 {
     MenuButton[] menuItems;
     Image selectorImage;
@@ -59,14 +59,6 @@ public class MenuItemsHandler : MonoBehaviour
         UpdateUI();
 	}
 
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.UpArrow))
-            SelectWithOffset(-1);
-        if(Input.GetKeyDown(KeyCode.DownArrow))
-            SelectWithOffset(1);
-    }
-
 	private void SelectWithOffset(int offset)
 	{
         selectedIndex += offset;
@@ -84,9 +76,18 @@ public class MenuItemsHandler : MonoBehaviour
 
         menuItems[selectedIndex].Select();
 
-        selectorImage.transform.position = new Vector3(
-            selectorImage.transform.position.x, 
-            menuItems[selectedIndex].transform.position.y, 
+        selectorImage.transform.position = new Vector3(selectorImage.transform.position.x, menuItems[selectedIndex].transform.position.y, 
             selectorImage.transform.position.z);
 	}
+
+	public override void HandleInput()
+	{
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            SelectWithOffset(-1);
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            SelectWithOffset(1);
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            menuItems[selectedIndex].InvokeClick();
+    }
 }
+
