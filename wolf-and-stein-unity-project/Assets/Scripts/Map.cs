@@ -130,6 +130,7 @@ public class Map:MonoBehaviourSingleton<Map>
                         PlaceDoor(spawnPos, row, col);
                         break;
                     case TileType.TUNNEL:
+                    case TileType.SECRET_TUNNEL:
                         break;           
                     case TileType.LAMP:
                         PlaceSimple(spawnPos, GamePreferences.Instance.Lamp);
@@ -159,15 +160,59 @@ public class Map:MonoBehaviourSingleton<Map>
                         PlaceSimple(spawnPos, GamePreferences.Instance.ChainGun);
                         break;
                     default:
+                        Debug.LogError("The method for this TileType is not implemented");
                         break;
                 }
+
+                Vector2Int tunnelDir = GetSecretTunnelDirection(row, col);
+                if (Vector2Int.zero != tunnelDir)
+                    PlaceSecretTunnelWalls(row, col, tunnelDir);
             }
             s += "\n";
         }
         //Debug.Log(s);
     }
 
-	internal void SpawnLootFromCorpse(Vector3 corpsePos)
+    //a direction eldöntéséhez legalább 2 narancs tile kell (szóval egy secret tunnel legalább 2 hosszú), ezekután az irány már egyértelmű, a "kérdező"
+    //irányában fog mozogni a fal
+	private void PlaceSecretTunnelWalls(int row, int col, Vector2Int tunnelDir)
+	{
+        Vector2Int currentCoords = new Vector2Int(row, col);
+            
+        while (IsValidCoord(currentCoords.x, currentCoords.y) && MapData[currentCoords.x, currentCoords.y] == TileType.SECRET_TUNNEL)
+        {
+            Vector3 spawnPos = new Vector3(col, 0.5f, -row);
+            PlaceSimple(spawnPos, GamePreferences.Instance.Wall1Block);
+
+            currentCoords += tunnelDir;
+        }
+	}
+
+    private Vector2Int GetSecretTunnelDirection(int row, int col)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector3 floatDirection = Quaternion.Euler(0, 90 * i, 0) * new Vector3(1, 0, 0);
+            Vector2Int adjCoords = new Vector2Int(row + (int)floatDirection.x, col + (int)floatDirection.z);
+            Vector2Int adjAdjCoords = new Vector2Int(row + (int)floatDirection.x * 2, col + (int)floatDirection.z * 2);
+
+            bool isTunnelOnAdjecent = IsValidCoord(adjCoords.x, adjCoords.y) && MapData[adjCoords.x, adjCoords.y] == TileType.SECRET_TUNNEL;
+            bool isTunnelOnAdjecentOfAdjecent = IsValidCoord(adjAdjCoords.x, adjAdjCoords.y) && 
+                MapData[adjAdjCoords.x, adjAdjCoords.y] == TileType.SECRET_TUNNEL;
+
+			if (isTunnelOnAdjecent)
+			{
+
+			}
+
+            if (isTunnelOnAdjecent && isTunnelOnAdjecentOfAdjecent)
+                return adjCoords;
+        }
+
+        return Vector2Int.zero;
+    }
+
+    internal void SpawnLootFromCorpse(Vector3 corpsePos)
 	{
         int layerMask = 1 << LayerMask.NameToLayer("Blockers") | 1 << LayerMask.NameToLayer("Wall");
 
@@ -203,7 +248,9 @@ public class Map:MonoBehaviourSingleton<Map>
             characterTransform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
-	private void PlaceSimple(Vector3 spawnPos, GameObject prefab)
+
+
+    private void PlaceSimple(Vector3 spawnPos, GameObject prefab)
     {
         Instantiate(prefab, spawnPos, Quaternion.identity, dynamic);
     }
@@ -308,8 +355,10 @@ public class Map:MonoBehaviourSingleton<Map>
                     MapData[i, j] = TileType.STONE_COLUMN;
                 else if (c == DoorColor)
                     MapData[i, j] = TileType.DOOR;
-                else if (c == TunnelColor || c == SecretTunnelColor)
+                else if (c == TunnelColor)
                     MapData[i, j] = TileType.TUNNEL;
+                else if(c == SecretTunnelColor)
+                    MapData[i, j] = TileType.SECRET_TUNNEL;
                 else if (c == LampColor)
                     MapData[i, j] = TileType.LAMP;
                 else if (c == SpawnPositionColor)
