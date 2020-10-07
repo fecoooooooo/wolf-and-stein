@@ -39,3 +39,5 @@ MonoBehaviour:
     type: 3}
   ChainGun: {fileID: 7844223814826930866, guid: cd70f82938014414cb8e40cc654677c6,
     type: 3}
+  SecretTunnelDoor: {fileID: 6894973730844499429, guid: e65a4fc2d70dd464b90fc215a387d75c,
+    type: 3}

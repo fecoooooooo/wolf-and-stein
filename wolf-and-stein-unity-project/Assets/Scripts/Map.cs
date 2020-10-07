@@ -106,58 +106,60 @@ public class Map:MonoBehaviourSingleton<Map>
                 s += (int)MapData[row, col];
                 Vector3 spawnPos = new Vector3(col, 0.5f, -row);
 
+                GameObject instantiatedPrefab = null;
+
                 switch (MapData[row, col])
                 {
                     case TileType.WALL1:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1Block);
+                        instantiatedPrefab = PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1Block);
                         break;
                     case TileType.WALL2:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2Block);
+                        instantiatedPrefab = PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2Block);
                         break;
                     case TileType.POSTER1:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster1);
+                        instantiatedPrefab = PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster1);
                         break;
                     case TileType.POSTER2:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster2);
+                        instantiatedPrefab = PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster2);
                         break;
                     case TileType.WOOD_COLUMN:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.WoodColumn);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.WoodColumn);
                         break;
                     case TileType.STONE_COLUMN:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.StoneColumn);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.StoneColumn);
                         break;
                     case TileType.DOOR:
-                        PlaceDoor(spawnPos, row, col);
+                        instantiatedPrefab = PlaceDoor(spawnPos, row, col);
                         break;
                     case TileType.TUNNEL:
                     case TileType.SECRET_TUNNEL:
                         break;           
                     case TileType.LAMP:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Lamp);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Lamp);
                         break;
                     case TileType.SPAWN:
                         PlaceCharacter(spawnPos, row, col);
                         break;
                     case TileType.FOOD:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Food);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Food);
                         break;
                     case TileType.AMMO:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Ammo);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Ammo);
                         break;
                     case TileType.KEY:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Key);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Key);
                         break;
                     case TileType.NOTE:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Note);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Note);
                         break;
                     case TileType.TREASURE:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.Treasure);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Treasure);
                         break;
                     case TileType.MACHINE_GUN:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.MachineGun);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.MachineGun);
                         break;
                     case TileType.CHAIN_GUN:
-                        PlaceSimple(spawnPos, GamePreferences.Instance.ChainGun);
+                        instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.ChainGun);
                         break;
                     default:
                         Debug.LogError("The method for this TileType is not implemented");
@@ -165,8 +167,8 @@ public class Map:MonoBehaviourSingleton<Map>
                 }
 
                 Vector2Int tunnelDir = GetSecretTunnelDirection(row, col);
-                if (Vector2Int.zero != tunnelDir)
-                    PlaceSecretTunnelWalls(row, col, tunnelDir);
+                if (Vector2Int.zero != tunnelDir && null != instantiatedPrefab)
+                    PlaceSecretTunnelObstacle(row, col, tunnelDir, instantiatedPrefab);
             }
             s += "\n";
         }
@@ -174,15 +176,21 @@ public class Map:MonoBehaviourSingleton<Map>
     }
 
     //a direction eldöntéséhez legalább 2 narancs tile kell (szóval egy secret tunnel legalább 2 hosszú), ezekután az irány már egyértelmű, a "kérdező"
-    //irányában fog mozogni a fal
-	private void PlaceSecretTunnelWalls(int row, int col, Vector2Int tunnelDir)
+    //irányából fog mozogni a fal
+	private void PlaceSecretTunnelObstacle(int row, int col, Vector2Int tunnelDir, GameObject instantiatedPrefab)
 	{
-        Vector2Int currentCoords = new Vector2Int(row, col);
+        SecretTunnelObstacle secretTunnelObstacle = Instantiate(GamePreferences.Instance.SecretTunnelDoor).GetComponent<SecretTunnelObstacle>();
+        secretTunnelObstacle.Init(new Vector3(tunnelDir.y, 0, -tunnelDir.x), instantiatedPrefab);
+        secretTunnelObstacle.transform.parent = dynamic;
+        instantiatedPrefab.transform.parent = secretTunnelObstacle.transform;
+
+        Vector2Int currentCoords = new Vector2Int(row, col) + tunnelDir;
             
         while (IsValidCoord(currentCoords.x, currentCoords.y) && MapData[currentCoords.x, currentCoords.y] == TileType.SECRET_TUNNEL)
         {
-            Vector3 spawnPos = new Vector3(col, 0.5f, -row);
-            PlaceSimple(spawnPos, GamePreferences.Instance.Wall1Block);
+            Vector3 spawnPos = new Vector3(currentCoords.y, 0.5f, -currentCoords.x);
+            GameObject wall = PlaceSimple(spawnPos, GamePreferences.Instance.Wall1Block);
+            wall.transform.parent = secretTunnelObstacle.transform;
 
             currentCoords += tunnelDir;
         }
@@ -192,16 +200,21 @@ public class Map:MonoBehaviourSingleton<Map>
     {
         for (int i = 0; i < 4; ++i)
         {
+            if(row == 26 && col == 12)
+			{
+
+			}
             Vector3 floatDirection = Quaternion.Euler(0, 90 * i, 0) * new Vector3(1, 0, 0);
-            Vector2Int adjCoords = new Vector2Int(row + (int)floatDirection.x, col + (int)floatDirection.z);
-            Vector2Int adjAdjCoords = new Vector2Int(row + (int)floatDirection.x * 2, col + (int)floatDirection.z * 2);
+            Vector2Int direction = new Vector2Int(Mathf.RoundToInt(floatDirection.x), Mathf.RoundToInt(floatDirection.z));
+            Vector2Int adjCoords = new Vector2Int(row + direction.x, col + direction.y);
+            Vector2Int adjAdjCoords = new Vector2Int(row + direction.x * 2, col + direction.y * 2);
 
             bool isTunnelOnAdjecent = IsValidCoord(adjCoords.x, adjCoords.y) && MapData[adjCoords.x, adjCoords.y] == TileType.SECRET_TUNNEL;
             bool isTunnelOnAdjecentOfAdjecent = IsValidCoord(adjAdjCoords.x, adjAdjCoords.y) && 
                 MapData[adjAdjCoords.x, adjAdjCoords.y] == TileType.SECRET_TUNNEL;
 
             if (isTunnelOnAdjecent && isTunnelOnAdjecentOfAdjecent)
-                return adjCoords;
+                return direction;
         }
 
         return Vector2Int.zero;
@@ -245,32 +258,34 @@ public class Map:MonoBehaviourSingleton<Map>
 
 
 
-    private void PlaceSimple(Vector3 spawnPos, GameObject prefab)
+    private GameObject PlaceSimple(Vector3 spawnPos, GameObject prefab)
     {
-        Instantiate(prefab, spawnPos, Quaternion.identity, dynamic);
+        return Instantiate(prefab, spawnPos, Quaternion.identity, dynamic);
     }
 
-    private void PlaceDoor(Vector3 spawnPos, int row, int col)
+    private GameObject PlaceDoor(Vector3 spawnPos, int row, int col)
     {
         //place door object
         bool isTunnelOverAndUnderDoor = IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col) || IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col);
         if (isTunnelOverAndUnderDoor)
-            Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.identity, dynamic);
+            return Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.identity, dynamic);
 		else
 		{
             bool doorToLeft = IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1);
             bool doorToRight = IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1);
             if (doorToLeft)
-                Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, -90, 0), dynamic);
+                return Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, -90, 0), dynamic);
             else if (doorToRight)
-                Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
+                return Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
         }
+        return null;
     }
 
-    private void PlaceWall(Vector3 spawnPos, int row, int col, GameObject prefab)
+    private GameObject PlaceWall(Vector3 spawnPos, int row, int col, GameObject prefab)
     {
         if(AnyTunnelAround(row, col))
-            PlaceSimple(spawnPos, prefab);
+            return PlaceSimple(spawnPos, prefab);
+        return null;
     }
 
 	private bool AnyTunnelAround(int row, int col)

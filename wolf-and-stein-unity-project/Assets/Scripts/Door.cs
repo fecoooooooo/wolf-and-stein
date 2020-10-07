@@ -36,7 +36,7 @@ public class Door : MonoBehaviour
 
 	private void HandleInteraction()
 	{
-		if (Input.GetKeyDown(KeyCode.E) && CanInteract())
+		if (Input.GetKeyDown(KeyCode.Space) && CanInteract())
 			Toggle();
 	}
 

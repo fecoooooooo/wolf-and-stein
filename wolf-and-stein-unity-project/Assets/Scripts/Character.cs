@@ -98,12 +98,12 @@ public class Character : MonoBehaviourSingleton<Character>
             EquipWeapon(WeaponType.MachineGun);
         else if (Input.GetKeyDown(KeyCode.Alpha4) && Ammo > 0/*&& HasChainGun*/)
             EquipWeapon(WeaponType.ChainGun);
-        else if (Input.GetKeyDown(KeyCode.Space))
+        else if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             Shooting = true;
             Shoot();
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else if (Input.GetKeyUp(KeyCode.LeftControl))
             Shooting = false;
     }
 
