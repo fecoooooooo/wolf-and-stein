@@ -109,10 +109,10 @@ public class Map:MonoBehaviourSingleton<Map>
                 switch (MapData[row, col])
                 {
                     case TileType.WALL1:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1);
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall1Block);
                         break;
                     case TileType.WALL2:
-                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2);
+                        PlaceWall(spawnPos, row, col, GamePreferences.Instance.Wall2Block);
                         break;
                     case TileType.POSTER1:
                         PlaceWall(spawnPos, row, col, GamePreferences.Instance.Poster1);
@@ -200,11 +200,6 @@ public class Map:MonoBehaviourSingleton<Map>
             bool isTunnelOnAdjecentOfAdjecent = IsValidCoord(adjAdjCoords.x, adjAdjCoords.y) && 
                 MapData[adjAdjCoords.x, adjAdjCoords.y] == TileType.SECRET_TUNNEL;
 
-			if (isTunnelOnAdjecent)
-			{
-
-			}
-
             if (isTunnelOnAdjecent && isTunnelOnAdjecentOfAdjecent)
                 return adjCoords;
         }
@@ -270,32 +265,23 @@ public class Map:MonoBehaviourSingleton<Map>
             else if (doorToRight)
                 Instantiate(GamePreferences.Instance.Door, spawnPos, Quaternion.Euler(0, 90, 0), dynamic);
         }
-        
-
-        //place frame of door
-        if (IsValidCoord(row - 1, col) && IsUnpassableOnCoord(row - 1, col))
-            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
-        if (IsValidCoord(row + 1, col) && IsUnpassableOnCoord(row + 1, col))
-            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
-        if (IsValidCoord(row, col - 1) && IsUnpassableOnCoord(row, col - 1))
-            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
-        if (IsValidCoord(row, col + 1) && IsUnpassableOnCoord(row, col + 1))
-            Instantiate(GamePreferences.Instance.DoorFrame, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
     }
 
     private void PlaceWall(Vector3 spawnPos, int row, int col, GameObject prefab)
     {
-        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col))
-            Instantiate(prefab, spawnPos + new Vector3(0, 0, 0.5f), Quaternion.identity, dynamic);
-        if (IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col))
-            Instantiate(prefab, spawnPos + new Vector3(0, 0, -0.5f), Quaternion.identity, dynamic);
-        if (IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1))
-            Instantiate(prefab, spawnPos + new Vector3(-0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
-        if (IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
-            Instantiate(prefab, spawnPos + new Vector3(0.5f, 0, 0), Quaternion.Euler(0, 90, 0), dynamic);
+        if(AnyTunnelAround(row, col))
+            PlaceSimple(spawnPos, prefab);
     }
 
-    public bool IsValidCoord(int row, int col)
+	private bool AnyTunnelAround(int row, int col)
+	{
+        return IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col) ||
+            IsValidCoord(row + 1, col) && IsPassableOnCoord(row + 1, col) ||
+            IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1) ||
+            IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1);
+    }
+
+	public bool IsValidCoord(int row, int col)
     {
         try
         {

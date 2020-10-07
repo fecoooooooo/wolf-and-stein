@@ -17,6 +17,8 @@ MonoBehaviour:
   Wall2: {fileID: 7790637854563171827, guid: be08e3ea320d2af40944c1c097c644db, type: 3}
   Wall1Block: {fileID: 7790637854563171827, guid: c1a750ca7290180458730d9a418c5396,
     type: 3}
+  Wall2Block: {fileID: 7790637854563171827, guid: ef0e2ad339f81d44ea75d26a238b1390,
+    type: 3}
   Poster1: {fileID: 7790637854563171827, guid: e781064dd6a982f44976dea8d2680eb6, type: 3}
   Poster2: {fileID: 7790637854563171827, guid: 3e118b8a63c361d40a03cf4d15ade52c, type: 3}
   WoodColumn: {fileID: 4037541320493713563, guid: a30db23af23d2314db952be63d747ee3,
