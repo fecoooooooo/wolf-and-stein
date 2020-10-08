@@ -200,10 +200,6 @@ public class Map:MonoBehaviourSingleton<Map>
     {
         for (int i = 0; i < 4; ++i)
         {
-            if(row == 26 && col == 12)
-			{
-
-			}
             Vector3 floatDirection = Quaternion.Euler(0, 90 * i, 0) * new Vector3(1, 0, 0);
             Vector2Int direction = new Vector2Int(Mathf.RoundToInt(floatDirection.x), Mathf.RoundToInt(floatDirection.z));
             Vector2Int adjCoords = new Vector2Int(row + direction.x, col + direction.y);

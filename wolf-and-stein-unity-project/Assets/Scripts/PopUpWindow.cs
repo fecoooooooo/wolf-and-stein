@@ -18,7 +18,6 @@ public class PopUpWindow : MonoWithInputSingleton<PopUpWindow>
 	void Start()
     {
         Transform rootCanvas = transform.parent;
-        DontDestroyOnLoad(rootCanvas.gameObject);
 
         visuals = transform.Find("Visuals").gameObject;
         messageLbl = transform.Find("Visuals/MessageLbl").GetComponent<TextMeshProUGUI>();

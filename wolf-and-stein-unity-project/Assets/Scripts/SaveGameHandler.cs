@@ -6,11 +6,6 @@ public class SaveGameHandler : MonoBehaviourSingleton<SaveGameHandler>
 {
     public bool SaveGameExists { get => PlayerPrefs.GetInt("Level", -1) != -1; }
 
-	private void Start()
-	{
-        DontDestroyOnLoad(gameObject);
-	}
-
 	public void LoadData()
 	{
         Map.instance.SetLevel(PlayerPrefs.GetInt("Level", 1));
