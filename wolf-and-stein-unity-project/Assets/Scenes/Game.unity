@@ -74276,6 +74276,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1420ebed1fd8a404b8cc952d4b84ada9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AnimationHalfTime: 0.06
+  GoalOpacity: 0.2
 --- !u!1 &1361891875
 GameObject:
   m_ObjectHideFlags: 0
