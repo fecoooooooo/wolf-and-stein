@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 {
+    public readonly Color DEATH_COLOR = Color.red;
+
     public float BlinkAnimationHalfTime = .05f;
     public float BlinkGoalOpacity = .75f;
 
-    public float DeathAnimTime = 1f;
     public int DeathAnimIterationsPerFrame = 30;
+    public int DeathAnimPixelSize = 20;
 
     Image powerUpEffectImg;
     Image damageEffectImg;
@@ -32,13 +34,13 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
         StartCoroutine(PlayBlinkEffectOnImage(damageEffectImg));
     }
 
+    
     public void PlayDeath()
 	{
-        StartCoroutine(PlayPixelizeOnTexture(deathEffectImg));
+        StartCoroutine(PlayPixelizeOnTexture(deathEffectImg, DEATH_COLOR));
 	}
 
-
-    IEnumerator PlayBlinkEffectOnImage(Image image)
+	IEnumerator PlayBlinkEffectOnImage(Image image)
 	{
         float timePassed = 0;
         Color currentColor = image.color;
@@ -71,29 +73,82 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
         image.color = currentColor;
     }
 
-    IEnumerator PlayPixelizeOnTexture(RawImage image)
+    IEnumerator PlayPixelizeOnTexture(RawImage image, Color pixelColor)
 	{
+        deathEffectImg.gameObject.SetActive(true);
+        MiniMap.instance.gameObject.SetActive(false);
+
         int width = (int)image.rectTransform.rect.width;
         int height = (int)image.rectTransform.rect.height;
 
-        Texture2D texture = new Texture2D(width / 5, height / 5);
-        image.texture = texture;
-        
-        float timePassed = 0;
-        while(timePassed < DeathAnimTime)
+        Texture2D texture = GenerateAndSetupTextureForDeathAnim(image, width, height);
+        Color[] colors = GetColorsArrForDeathAnim(DeathAnimPixelSize, pixelColor);
+        List<Vector2Int> startingUVs = GenerateDeathAnimStartingUVs(width, height);
+
+        while(startingUVs.Count > 0)
 		{
-            for(int i = 0; i < DeathAnimIterationsPerFrame; ++i)
+            for (int i = 0; i < DeathAnimIterationsPerFrame; ++i)
 			{
-                int u = Random.Range(0, texture.width);
-                int v = Random.Range(0, texture.height);
-                texture.SetPixel(u, v, Color.red);
+                if (0 >= startingUVs.Count)
+                    break;
+
+                int index = Random.Range(0, startingUVs.Count);
+                int u = startingUVs[index].x;
+                int v = startingUVs[index].y;
+
+                int xBlockSize = Mathf.Min(DeathAnimPixelSize, width - u);
+                int yBlockSize = Mathf.Min(DeathAnimPixelSize, height - v);
+
+                startingUVs.RemoveAt(index);
+
+                texture.SetPixels(u, v, xBlockSize, yBlockSize, colors);
 			}
 
             texture.Apply();
 
-            timePassed += Time.deltaTime;
             yield return null;
 		}
+    }
+
+    private Texture2D GenerateAndSetupTextureForDeathAnim(RawImage image, int width, int height)
+	{
+        Texture2D texture = new Texture2D(width, height);
+
+        Color[] colors = new Color[width * height];
+        for (int i = 0; i < width * height; ++i)
+            colors[i] = new Color(0, 0, 0, 0);
+
+        texture.SetPixels(colors);
+        texture.Apply();
+
+        image.texture = texture;
+
+        return texture;
 	}
 
+	private Color[] GetColorsArrForDeathAnim(int deathAnimPixelSize, Color pixelColor)
+	{
+        Color[] colors = new Color[DeathAnimPixelSize * DeathAnimPixelSize];
+        for (int i = 0; i < DeathAnimPixelSize * DeathAnimPixelSize; ++i)
+            colors[i] = pixelColor;
+
+        return colors;
+    }
+
+
+	private List<Vector2Int> GenerateDeathAnimStartingUVs(int width, int height)
+	{
+        List<Vector2Int> startingUVs = new List<Vector2Int>(width * height);
+
+        int uCoordCount = Mathf.CeilToInt(width / (float)DeathAnimPixelSize);
+        int vCoordCount = Mathf.CeilToInt(height / (float)DeathAnimPixelSize);
+
+        for (int i = 0; i < uCoordCount; ++i)
+        {
+            for (int j = 0; j < vCoordCount; ++j)
+                startingUVs.Add(new Vector2Int(i * DeathAnimPixelSize, j * DeathAnimPixelSize));
+        }
+
+        return startingUVs;
+    }
 }
