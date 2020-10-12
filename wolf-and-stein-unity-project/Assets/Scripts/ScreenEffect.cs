@@ -13,34 +13,69 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
     public int DeathAnimIterationsPerFrame = 30;
     public int DeathAnimPixelSize = 20;
 
+    public float EndSceneTime = 1f;
+
     Image powerUpEffectImg;
     Image damageEffectImg;
     RawImage deathEffectImg;
+    Image endSceneImg;
 
 	void Start()
     {
         powerUpEffectImg = transform.Find("PowerUpEffectImg").GetComponent<Image>();
         damageEffectImg = transform.Find("DamageEffectImg").GetComponent<Image>();
         deathEffectImg = transform.Find("DeathEffectImg").GetComponent<RawImage>();
+        endSceneImg = transform.Find("EndSceneImg").GetComponent<Image>();
     }
 
     public void PlayPowerUp()
 	{
+        PlaceEffectsUnderHUD();
         StartCoroutine(PlayBlinkEffectOnImage(powerUpEffectImg));
 	}
 
     public void PlayDamage()
     {
+        PlaceEffectsUnderHUD();
         StartCoroutine(PlayBlinkEffectOnImage(damageEffectImg));
     }
-
     
     public void PlayDeath()
 	{
+        PlaceEffectsUnderHUD();
+        deathEffectImg.gameObject.SetActive(true);
+        MiniMap.instance.gameObject.SetActive(false);
         StartCoroutine(PlayPixelizeOnTexture(deathEffectImg, DEATH_COLOR));
 	}
 
-	IEnumerator PlayBlinkEffectOnImage(Image image)
+    public void PlayEndScene()
+    {
+        PlaceEffectsOverHUD();
+        endSceneImg.gameObject.SetActive(true);
+        StartCoroutine(PlayFadeInEffect(endSceneImg));
+    }
+
+    IEnumerator PlayFadeInEffect(Image image)
+    {
+        Color currentColor = image.color;
+
+        float timePassed = 0;
+        while (timePassed < EndSceneTime)
+        {
+            float t = timePassed / EndSceneTime;
+            currentColor.a = Mathf.Lerp(0, 1, t);
+            image.color = currentColor;
+
+            timePassed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        currentColor.a = 1;
+        image.color = currentColor;
+    }
+
+    IEnumerator PlayBlinkEffectOnImage(Image image)
 	{
         float timePassed = 0;
         Color currentColor = image.color;
@@ -75,9 +110,6 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
     IEnumerator PlayPixelizeOnTexture(RawImage image, Color pixelColor)
 	{
-        deathEffectImg.gameObject.SetActive(true);
-        MiniMap.instance.gameObject.SetActive(false);
-
         int width = (int)image.rectTransform.rect.width;
         int height = (int)image.rectTransform.rect.height;
 
@@ -151,4 +183,14 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
         return startingUVs;
     }
+
+    void PlaceEffectsOverHUD()
+	{
+        transform.SetAsLastSibling();
+
+    }
+    void PlaceEffectsUnderHUD()
+	{
+        HUD.instance.transform.SetAsLastSibling();
+	}
 }
