@@ -24,6 +24,7 @@ public class LevelDataImageEditor : Editor
     Texture2D tunnelTexture;
     Texture2D secretTunnelTexture;
     Texture2D spawnPosTexture;
+    Texture2D endRoomTexture;
     Texture2D foodTexture;
     Texture2D ammoTexture;
     Texture2D keyTexture;
@@ -48,6 +49,7 @@ public class LevelDataImageEditor : Editor
         SetButtonTexture(ref tunnelTexture, Map.TunnelColor);
         SetButtonTexture(ref secretTunnelTexture, Map.SecretTunnelColor);
         SetButtonTexture(ref spawnPosTexture, Map.SpawnPositionColor);
+        SetButtonTexture(ref endRoomTexture, Map.EndRoomColor);
         SetButtonTexture(ref foodTexture, Map.FoodColor);
         SetButtonTexture(ref ammoTexture, Map.AmmoColor);
         SetButtonTexture(ref keyTexture, Map.KeyColor);
@@ -113,6 +115,7 @@ public class LevelDataImageEditor : Editor
         AddColoringButton("Tunnel", tunnelTexture, Map.TunnelColor);
         AddColoringButton("Secret tunnel", secretTunnelTexture, Map.SecretTunnelColor);
         AddColoringButton("Spawn Position", spawnPosTexture, Map.SpawnPositionColor);
+        AddColoringButton("End room", endRoomTexture, Map.EndRoomColor);
         AddColoringButton("Food", foodTexture, Map.FoodColor);
         AddColoringButton("Ammo", ammoTexture, Map.AmmoColor);
         AddColoringButton("Key", keyTexture, Map.KeyColor);

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public abstract class Pickable : MonoBehaviour
 {
-
-
 	private void OnTriggerEnter(Collider other)
 	{
 		if(other.gameObject == Character.instance.gameObject && ExtraCondition())
@@ -13,7 +11,6 @@ public abstract class Pickable : MonoBehaviour
 			OnPickUp();
 			Destroy(gameObject);
 		}
-
 	}
 
 	public abstract void OnPickUp();

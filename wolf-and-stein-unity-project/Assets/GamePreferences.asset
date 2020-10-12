@@ -41,3 +41,4 @@ MonoBehaviour:
     type: 3}
   SecretTunnelDoor: {fileID: 6894973730844499429, guid: e65a4fc2d70dd464b90fc215a387d75c,
     type: 3}
+  Endroom: {fileID: 7790637854563171827, guid: 739b7afb998834842b818c72fe83a8e2, type: 3}

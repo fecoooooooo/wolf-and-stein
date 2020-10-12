@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HUD : MonoBehaviour
+public class HUD : MonoBehaviourSingleton<HUD>
 {
     TextMeshProUGUI LevelLabel;
     TextMeshProUGUI ScoreLabel;
@@ -21,8 +21,6 @@ public class HUD : MonoBehaviour
     Sprite pistolWeaponImg;
     Sprite machineGunWeaponImg;
     Sprite chainGunWeaponImg;
-
-    RawImage minimapImg;
 
     void Start()
     {
@@ -41,8 +39,6 @@ public class HUD : MonoBehaviour
         machineGunWeaponImg = Resources.Load<Sprite>("inventory_rifle");
         chainGunWeaponImg = Resources.Load<Sprite>("inventory_chaingun");
         
-        minimapImg = transform.Find("MiniMap").GetComponent<RawImage>();
-
         Character.instance.ShouldUpdateUI += OnUpdateUI;
         Character.instance.WeaponChanged += OnWeaponChanged;
     }

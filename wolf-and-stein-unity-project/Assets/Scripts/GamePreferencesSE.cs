@@ -26,4 +26,5 @@ public class GamePreferencesSE : ScriptableObject
 	public GameObject MachineGun;
 	public GameObject ChainGun;
 	public GameObject SecretTunnelDoor;
+	public GameObject Endroom;
 }

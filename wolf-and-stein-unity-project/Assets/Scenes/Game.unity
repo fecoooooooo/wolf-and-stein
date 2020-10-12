@@ -74458,7 +74458,7 @@ MonoBehaviour:
   BlinkGoalOpacity: 0.75
   DeathAnimIterationsPerFrame: 30
   DeathAnimPixelSize: 20
-  EndSceneTime: 2
+  EndSceneTime: 1
 --- !u!1 &1362652254
 GameObject:
   m_ObjectHideFlags: 0

@@ -47,11 +47,13 @@ public class SecretTunnelObstacle : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		canInteract = true;
+		if (other.gameObject == Character.instance.gameObject)
+			canInteract = true;
 	}
 
 	private void OnTriggerExit(Collider other)
 	{
-		canInteract = false;
+		if (other.gameObject == Character.instance.gameObject)
+			canInteract = false;
 	}
 }

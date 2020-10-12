@@ -22,6 +22,7 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color TunnelColor = Color.white;
     public static readonly Color SecretTunnelColor = new Color32(255, 145, 0, 255);
     public static readonly Color SpawnPositionColor = Color.magenta;
+    public static readonly Color EndRoomColor = new Color32(153, 153, 255, 255);
     public static readonly Color FoodColor = new Color32(55, 255, 0, 255);
     public static readonly Color AmmoColor = new Color32(170, 0, 232, 255);
     public static readonly Color KeyColor = new Color32(183, 255, 0, 255);
@@ -140,6 +141,9 @@ public class Map:MonoBehaviourSingleton<Map>
                     case TileType.SPAWN:
                         PlaceCharacter(spawnPos, row, col);
                         break;
+                    case TileType.END_ROOM:
+                        instantiatedPrefab = PlaceEndRoom(spawnPos, row, col);
+                        break;
                     case TileType.FOOD:
                         instantiatedPrefab = PlaceSimple(spawnPos, GamePreferences.Instance.Food);
                         break;
@@ -175,8 +179,8 @@ public class Map:MonoBehaviourSingleton<Map>
         //Debug.Log(s);
     }
 
-    //a direction eldöntéséhez legalább 2 narancs tile kell (szóval egy secret tunnel legalább 2 hosszú), ezekután az irány már egyértelmű, a "kérdező"
-    //irányából fog mozogni a fal
+	//a direction eldöntéséhez legalább 2 narancs tile kell (szóval egy secret tunnel legalább 2 hosszú), ezekután az irány már egyértelmű, a "kérdező"
+	//irányából fog mozogni a fal
 	private void PlaceSecretTunnelObstacle(int row, int col, Vector2Int tunnelDir, GameObject instantiatedPrefab)
 	{
         SecretTunnelObstacle secretTunnelObstacle = Instantiate(GamePreferences.Instance.SecretTunnelDoor).GetComponent<SecretTunnelObstacle>();
@@ -252,11 +256,22 @@ public class Map:MonoBehaviourSingleton<Map>
             characterTransform.rotation = Quaternion.Euler(0, 90, 0);
     }
 
-
-
     private GameObject PlaceSimple(Vector3 spawnPos, GameObject prefab)
     {
         return Instantiate(prefab, spawnPos, Quaternion.identity, dynamic);
+    }
+
+    private GameObject PlaceEndRoom(Vector3 spawnPos, int row, int col)
+    {
+        float rotation = 0;
+        if (IsValidCoord(row - 1, col) && IsPassableOnCoord(row - 1, col))
+            rotation = 180;
+        if(IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1))
+            rotation = 90;
+        if(IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1))
+            rotation = -90;
+
+        return Instantiate(GamePreferences.Instance.Endroom, spawnPos, Quaternion.Euler(0, rotation, 0), dynamic);
     }
 
     private GameObject PlaceDoor(Vector3 spawnPos, int row, int col)
@@ -291,6 +306,7 @@ public class Map:MonoBehaviourSingleton<Map>
             IsValidCoord(row, col - 1) && IsPassableOnCoord(row, col - 1) ||
             IsValidCoord(row, col + 1) && IsPassableOnCoord(row, col + 1);
     }
+
 
 	public bool IsValidCoord(int row, int col)
     {
@@ -360,6 +376,8 @@ public class Map:MonoBehaviourSingleton<Map>
                     MapData[i, j] = TileType.LAMP;
                 else if (c == SpawnPositionColor)
                     MapData[i, j] = TileType.SPAWN;
+                else if (c == EndRoomColor)
+                    MapData[i, j] = TileType.END_ROOM;
                 else if (c == FoodColor)
                     MapData[i, j] = TileType.FOOD;
                 else if (c == AmmoColor)
@@ -382,7 +400,7 @@ public class Map:MonoBehaviourSingleton<Map>
 
     internal void SetLevel(int Level)
 	{
-        this.CurrentLevel = Level;
+        CurrentLevel = Level;
 	}
 
 	public enum TileType : int
@@ -396,6 +414,7 @@ public class Map:MonoBehaviourSingleton<Map>
         
         UNPASSABLE = STONE_COLUMN,
         
+        END_ROOM,
         DOOR,
 
         SEMIPASSABLE = DOOR,
