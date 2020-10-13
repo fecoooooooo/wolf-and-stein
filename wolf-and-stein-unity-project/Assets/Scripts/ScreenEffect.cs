@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 {
     public readonly Color DEATH_COLOR = Color.red;
+    public readonly Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
 
     public float BlinkAnimationHalfTime = .05f;
     public float BlinkGoalOpacity = .75f;
@@ -20,8 +21,11 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
     RawImage deathEffectImg;
     Image endSceneImg;
 
+    Transform originalparent;
+
 	void Start()
     {
+        originalparent = transform.parent;
         powerUpEffectImg = transform.Find("PowerUpEffectImg").GetComponent<Image>();
         damageEffectImg = transform.Find("DamageEffectImg").GetComponent<Image>();
         deathEffectImg = transform.Find("DeathEffectImg").GetComponent<RawImage>();
@@ -42,17 +46,30 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
     
     public void PlayDeath()
 	{
-        PlaceEffectsUnderHUD();
+        PlayEffectsOverMiniMap();
         deathEffectImg.gameObject.SetActive(true);
-        MiniMap.instance.gameObject.SetActive(false);
-        StartCoroutine(PlayPixelizeOnTexture(deathEffectImg, DEATH_COLOR));
+        StartCoroutine(PlayPixelizeOnTexture(deathEffectImg, DEATH_COLOR, TRANSPARENT_COLOR));
 	}
+
+    public void PlayRespawn()
+    {
+        PlayEffectsOverMiniMap();
+        deathEffectImg.gameObject.SetActive(true);
+        StartCoroutine(PlayPixelizeOnTexture(deathEffectImg, TRANSPARENT_COLOR, DEATH_COLOR));
+    }
 
     public void PlayEndScene()
     {
         PlaceEffectsOverHUD();
         endSceneImg.gameObject.SetActive(true);
         StartCoroutine(PlayFadeInEffect(endSceneImg));
+    }
+
+    public void PlayStartScene()
+    {
+        PlaceEffectsOverHUD();
+        endSceneImg.gameObject.SetActive(true);
+        StartCoroutine(PlayFadeOutEffect(endSceneImg));
     }
 
     IEnumerator PlayFadeInEffect(Image image)
@@ -72,6 +89,26 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
         }
 
         currentColor.a = 1;
+        image.color = currentColor;
+    }
+
+    IEnumerator PlayFadeOutEffect(Image image)
+    {
+        Color currentColor = image.color;
+
+        float timePassed = 0;
+        while (timePassed < EndSceneTime)
+        {
+            float t = timePassed / EndSceneTime;
+            currentColor.a = Mathf.Lerp(1, 0, t);
+            image.color = currentColor;
+
+            timePassed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        currentColor.a = 0;
         image.color = currentColor;
     }
 
@@ -108,12 +145,12 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
         image.color = currentColor;
     }
 
-    IEnumerator PlayPixelizeOnTexture(RawImage image, Color pixelColor)
+    IEnumerator PlayPixelizeOnTexture(RawImage image, Color pixelColor, Color startTintColor)
 	{
         int width = (int)image.rectTransform.rect.width;
         int height = (int)image.rectTransform.rect.height;
 
-        Texture2D texture = GenerateAndSetupTextureForDeathAnim(image, width, height);
+        Texture2D texture = GenerateAndSetupTextureForDeathAnim(image, width, height, startTintColor);
         Color[] colors = GetColorsArrForDeathAnim(DeathAnimPixelSize, pixelColor);
         List<Vector2Int> startingUVs = GenerateDeathAnimStartingUVs(width, height);
 
@@ -142,13 +179,13 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 		}
     }
 
-    private Texture2D GenerateAndSetupTextureForDeathAnim(RawImage image, int width, int height)
+    private Texture2D GenerateAndSetupTextureForDeathAnim(RawImage image, int width, int height, Color startTintColor)
 	{
         Texture2D texture = new Texture2D(width, height);
 
         Color[] colors = new Color[width * height];
         for (int i = 0; i < width * height; ++i)
-            colors[i] = new Color(0, 0, 0, 0);
+            colors[i] = startTintColor;
 
         texture.SetPixels(colors);
         texture.Apply();
@@ -186,11 +223,20 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
     void PlaceEffectsOverHUD()
 	{
+        transform.SetParent(originalparent);
         transform.SetAsLastSibling();
 
     }
     void PlaceEffectsUnderHUD()
 	{
+        transform.SetParent(originalparent);
         HUD.instance.transform.SetAsLastSibling();
 	}
+
+    void PlayEffectsOverMiniMap()
+	{
+        transform.SetParent(HUD.instance.transform);
+        transform.SetAsFirstSibling();
+        MiniMap.instance.transform.SetAsFirstSibling();
+    }
 }
