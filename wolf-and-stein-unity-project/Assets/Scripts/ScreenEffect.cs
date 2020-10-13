@@ -23,6 +23,8 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
     Transform originalparent;
 
+    public bool Animating { get; private set; }
+
 	void Start()
     {
         originalparent = transform.parent;
@@ -74,6 +76,8 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
     IEnumerator PlayFadeInEffect(Image image)
     {
+        Animating = true;
+
         Color currentColor = image.color;
 
         float timePassed = 0;
@@ -90,10 +94,14 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
         currentColor.a = 1;
         image.color = currentColor;
+
+        Animating = false;
     }
 
     IEnumerator PlayFadeOutEffect(Image image)
     {
+        Animating = true;
+
         Color currentColor = image.color;
 
         float timePassed = 0;
@@ -110,10 +118,14 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
         currentColor.a = 0;
         image.color = currentColor;
+
+        Animating = false;
     }
 
     IEnumerator PlayBlinkEffectOnImage(Image image)
 	{
+        Animating = true;
+
         float timePassed = 0;
         Color currentColor = image.color;
 
@@ -143,10 +155,14 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
 
         currentColor.a = 0;
         image.color = currentColor;
+
+        Animating = false;
     }
 
     IEnumerator PlayPixelizeOnTexture(RawImage image, Color pixelColor, Color startTintColor)
 	{
+        Animating = true;
+
         int width = (int)image.rectTransform.rect.width;
         int height = (int)image.rectTransform.rect.height;
 
@@ -176,7 +192,10 @@ public class ScreenEffect : MonoBehaviourSingleton<ScreenEffect>
             texture.Apply();
 
             yield return null;
-		}
+         
+        }
+
+        Animating = false;
     }
 
     private Texture2D GenerateAndSetupTextureForDeathAnim(RawImage image, int width, int height, Color startTintColor)

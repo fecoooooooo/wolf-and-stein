@@ -170,7 +170,7 @@ public class Door : MonoBehaviour
 		bool closingDoor = animDirection == -1.0f;
 		if (closingDoor)
 		{
-			animator.SetFloat("Direction", 0);
+			animator?.SetFloat("Direction", 0);
 			shouldAutoCloseDoor = false;
 			timeTillDoorClose = -1f;
 		}

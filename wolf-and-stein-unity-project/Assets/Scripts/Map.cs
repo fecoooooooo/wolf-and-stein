@@ -11,7 +11,7 @@ public class Map:MonoBehaviourSingleton<Map>
     public Color ceilingColor;
     public int CurrentLevel { get; private set; }
 
-    public static readonly Color Wall1Color = Color.black;
+	public static readonly Color Wall1Color = Color.black;
     public static readonly Color Wall2Color = new Color(0.4980392f, 0.4980392f, 0.4980392f, 1.000f);
     public static readonly Color Poster1Color = new Color(0.64705882352f, 1f, 0.54117647058f, 1.000f);
     public static readonly Color Poster2Color = new Color(0.2f, 0.31764705882f, 0.16078431372f, 1.000f);
@@ -31,12 +31,15 @@ public class Map:MonoBehaviourSingleton<Map>
     public static readonly Color MachineGunColor = new Color32(8, 41, 17, 255);
     public static readonly Color ChainGunColor = new Color32(98, 122, 105, 255);
 
+    public TileType[,] MapData { get; private set; }
+    public bool Generating { get; private set; }
+
     Transform floor;
     Transform ceiling;
     Transform dynamic;
-    public TileType[,] MapData { get; private set; }
 
     List<Enemy> enemies = new List<Enemy>();
+
 
 	void Start()
     {
@@ -83,6 +86,8 @@ public class Map:MonoBehaviourSingleton<Map>
 
     public void Generate(int level)
     {
+        Generating = true;
+
         Debug.Log("Generatre level: " + level);
 
         CurrentLevel = level;
@@ -90,6 +95,13 @@ public class Map:MonoBehaviourSingleton<Map>
         ReadMapData(level);
         DeleteCurrentLevel();
         PlaceLevelPrefabs();
+
+        Generating = false;
+    }
+
+    public void RegenerateCurrent()
+    {
+        Generate(CurrentLevel);
     }
 
     private void OnValidate()
