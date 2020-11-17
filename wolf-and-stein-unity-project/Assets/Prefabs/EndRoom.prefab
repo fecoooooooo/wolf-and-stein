@@ -193,6 +193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c2a69b84168a948b02d938c70092fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutoCloseEnabled: 0
 --- !u!65 &2396100574301927923
 BoxCollider:
   m_ObjectHideFlags: 0

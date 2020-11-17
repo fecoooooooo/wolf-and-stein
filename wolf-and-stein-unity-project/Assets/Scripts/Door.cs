@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
+	public bool AutoCloseEnabled = true;
+
 	Animator animator;
 	Collider pathBlockCollider;
 	Bounds canInteractBounds;
@@ -60,7 +62,7 @@ public class Door : MonoBehaviour
 
 	private void HandleAutoClose()
 	{
-		if (shouldAutoCloseDoor)
+		if (shouldAutoCloseDoor && AutoCloseEnabled)
 		{
 			timeTillDoorClose -= Time.deltaTime;
 		
