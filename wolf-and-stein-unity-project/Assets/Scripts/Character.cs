@@ -20,7 +20,6 @@ public class Character : MonoBehaviourSingleton<Character>
     public int HP { get; private set; }
     public int Ammo { get; private set; }
     public int Keys { get; private set; }
-    public int Notes { get; private set; }
     public bool HasMachinGun { get; private set; }
     public bool HasChainGun { get; private set; }
     public bool Shooting { get; private set; }
@@ -175,7 +174,6 @@ public class Character : MonoBehaviourSingleton<Character>
         this.HP = hP;
         this.Ammo = ammo;
         this.Keys = keys;
-        this.Notes = notes;
         this.HasMachinGun = hasMachinGun;
         this.HasChainGun = hasChainGun;
 
@@ -200,11 +198,6 @@ public class Character : MonoBehaviourSingleton<Character>
         ShouldUpdateUI?.Invoke(this, null);
     }
 
-    internal void AddNote(int amountToAdd)
-    {
-        Notes += amountToAdd;
-        ShouldUpdateUI?.Invoke(this, null);
-    }
 
     internal void AddAmmo(int amountToAdd)
     {

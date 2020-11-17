@@ -9,6 +9,11 @@ public class GamePreferences:MonoBehaviour
 	static GamePreferencesSE instance;
 	public static GamePreferencesSE Instance { get => instance; }
 
+	private void Awake()
+	{
+		instance = gamePreferences;
+	}
+
 	private void OnValidate()
 	{
 		instance = gamePreferences;

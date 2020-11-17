@@ -6,7 +6,7 @@ public class Note : Pickable
 {
     public override void OnPickUp()
     {
-        Character.instance.AddNote(1);
+        Collectibles.instance.AddCollectible();
     }
 
 }

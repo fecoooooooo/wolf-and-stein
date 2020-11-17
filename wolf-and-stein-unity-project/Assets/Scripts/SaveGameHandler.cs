@@ -18,6 +18,8 @@ public class SaveGameHandler : MonoBehaviourSingleton<SaveGameHandler>
         bool HasMachinGun = PlayerPrefs.GetInt("HasMachinGun", 0) == 0 ? false : true;
         bool HasChainGun = PlayerPrefs.GetInt("HasChainGun", 0) == 0 ? false : true;
 
+        Collectibles.instance.Load();
+
         Character.instance.SetValues(Score, Lives, HP, Ammo, Keys, Notes, HasMachinGun, HasChainGun);
 	}
 
@@ -29,7 +31,6 @@ public class SaveGameHandler : MonoBehaviourSingleton<SaveGameHandler>
         PlayerPrefs.SetInt("HP", Character.instance.HP);
         PlayerPrefs.SetInt("Ammo", Character.instance.Ammo);
         PlayerPrefs.SetInt("Keys", Character.instance.Keys);
-        PlayerPrefs.SetInt("Notes", Character.instance.Notes);
         PlayerPrefs.SetInt("HasMachinGun", Character.instance.HasMachinGun ? 1 : 0);
         PlayerPrefs.SetInt("HasChainGun", Character.instance.HasChainGun ? 1 : 0);
         PlayerPrefs.Save();

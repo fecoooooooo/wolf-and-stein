@@ -51,7 +51,7 @@ public class HUD : MonoBehaviourSingleton<HUD>
         HealthLabel.text = Character.instance.HP.ToString() + "%";
         AmmoLabel.text = Character.instance.Ammo.ToString();
         KeysLabel.text = Character.instance.Keys.ToString();
-        NotesLabel.text = Character.instance.Notes.ToString();
+        NotesLabel.text = Collectibles.instance.FoundEntriesCount.ToString();
 	}
 
     private void OnWeaponChanged(object sender, EventArgs e)
