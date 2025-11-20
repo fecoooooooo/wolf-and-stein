@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour
     public float IdleChance = 0.002f;
 
     float currentHp;
-    bool chasing = false;
 
     const float TARGET_REACHED_DISTANCE = .01f;
     bool hasTarget = false;
@@ -44,50 +43,82 @@ public class Enemy : MonoBehaviour
         timeToLeaveIdle = animator.runtimeAnimatorController.animationClips.FirstOrDefault(a => a.name == "EnemyIdleLeave").length * 2;
 
         targetDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+        targetDebug.GetComponent<SphereCollider>().enabled = false;
         targetDebug.localScale = new Vector3(.2f, .2f, .2f);
         targetDebug.GetComponent<MeshRenderer>().material = Resources.Load<Material>("DebugMaterial");
     }
 
     void FixedUpdate()
     {
+		HandleIdle();
+
+		switch (state)
+        {
+            case EnemyState.Idle:
+                Idle();
+                break;
+            case EnemyState.IdleLeave:
+                break;
+            case EnemyState.Dead:
+                return;
+            case EnemyState.Attack:
+                break;
+            case EnemyState.Walk:
+				Move();
+                break;
+            case EnemyState.WalkBack:
+				Move();
+                break;
+            case EnemyState.WalkLeft:
+				Move();
+                break;
+            case EnemyState.WalkRight:
+				Move();
+				break;
+            default:
+                break;
+        }
         if (state == EnemyState.Dead)
             return;
 
-        HandleIdle();
+        Attack();
 
-        if (state == EnemyState.Idle)
-            return;
 
-        Move();
     }
 
-    private void HandleIdle()
+	private void Attack()
+	{
+		animator.SetTrigger("Attack");
+	}
+
+	private void HandleIdle()
     {
-        if (state != EnemyState.Idle &&!hasTarget && Random.Range(0f, 1f) < IdleChance)
+        if (state != EnemyState.Idle && !hasTarget && Random.Range(0f, 1f) < IdleChance)
 		{
             state = EnemyState.Idle;
             idleTimeLeft = IdleTime;
             animator.SetTrigger("IdleEnter");
         }
-        else if (state == EnemyState.Idle)
-        {
-            idleTimeLeft -= Time.deltaTime;
-            if (state != EnemyState.IdleLeave && idleTimeLeft <= timeToLeaveIdle)
-            {
-                state = EnemyState.IdleLeave;
-                animator.SetTrigger("IdleLeave");
-            }
-            if (idleTimeLeft <= 0)
-                state = EnemyState.Walk;
-        }
     }
+
+    private void Idle()
+    {
+		idleTimeLeft -= Time.deltaTime;
+		if (state != EnemyState.IdleLeave && idleTimeLeft <= timeToLeaveIdle)
+		{
+			state = EnemyState.IdleLeave;
+			animator.SetTrigger("IdleLeave");
+		}
+		if (idleTimeLeft <= 0)
+			state = EnemyState.Walk;
+	}
 
     private void Move()
     {
         SetRequiredWalkAnimation();
 
         RaycastHit hitInfo;
-        if (!hasTarget && !chasing && Physics.Raycast(new Ray(transform.position, transform.forward), out hitInfo, MinDistanceToOtherColliders))
+        if (!hasTarget && Physics.Raycast(new Ray(transform.position, transform.forward), out hitInfo, MinDistanceToOtherColliders))
         {
             Door door = hitInfo.transform.GetComponent<Door>();
 

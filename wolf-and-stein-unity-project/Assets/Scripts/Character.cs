@@ -187,7 +187,7 @@ public class Character : MonoBehaviourSingleton<Character>
         Vector3 forwardAmount = transform.forward * forwardImput * FORWARD_SPEED;
         Vector3 sideAmount = transform.right * sideInput * SIDE_SPEED;
 
-        rigidbody.velocity = forwardAmount + sideAmount;
+        rigidbody.linearVelocity = forwardAmount + sideAmount;
 
         rigidbody.angularVelocity = transform.up * turnInput * TURN_SPEED;
     }
